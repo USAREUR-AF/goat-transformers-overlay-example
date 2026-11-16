@@ -1,0 +1,18 @@
+# FICTIONAL model module, invented only to show the overlay shape. It stands in
+# for the modules a real private overlay holds: keys and lists that exist only
+# in the overlay's formats, declared here and never in the public library.
+# It is marked `controlled` to show the mechanics; nothing in it is real.
+module        xtdl
+version       0.3.0
+distribution  controlled
+source        "invented for this example; no external document"
+key   sector       int     -    "fictional: which of 32 sectors the reporter is in"
+key   status       string  -    "fictional: state of the reporter: idle, active, fault or unknown"
+key   day_s        float   s    "fictional: time of the report, seconds since the last UTC midnight"
+list  contacts                  "fictional: the things the reporter has in view"
+key   contact_id   int     -    "fictional: number of one contact, 0 to 255 (a key of an item of contacts)"
+key   bearing_deg  float   deg  "fictional: direction of one contact from the reporter, degrees (a key of an item of contacts)"
+key   range_m      float   m    "fictional: distance of one contact from the reporter (a key of an item of contacts)"
+# The binary formats hold a time of day and no date. A format that holds the
+# full instant in the public key `time_ms` fills `xtdl.day_s` through this line.
+derive  xtdl.day_s  day_seconds  time_ms

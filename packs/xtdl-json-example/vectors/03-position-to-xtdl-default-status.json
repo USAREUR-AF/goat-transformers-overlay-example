@@ -1,0 +1,7 @@
+{
+  "name": "position-to-xtdl-default-status",
+  "from": "xtdl-json-example",
+  "to": "xtdl-example",
+  "input": "{\"time\":\"2021-02-27T20:00:00.000Z\",\"sector\":19,\"position\":{\"lat\":35.25,\"lon\":10.5}}",
+  "expect": "9940190120b90215402c420653"
+}

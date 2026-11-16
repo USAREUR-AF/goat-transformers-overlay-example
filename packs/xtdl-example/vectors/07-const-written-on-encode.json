@@ -1,0 +1,7 @@
+{
+  "name": "const-written-on-encode",
+  "from": "xtdl-example",
+  "to": "xtdl-example",
+  "input": "9940190120b90215402c420601",
+  "expect": "9940190120b90215402c420651"
+}

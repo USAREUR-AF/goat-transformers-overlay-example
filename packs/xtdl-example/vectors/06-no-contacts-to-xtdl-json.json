@@ -1,0 +1,10 @@
+{
+  "name": "no-contacts-to-xtdl-json",
+  "from": "xtdl-example",
+  "to": "xtdl-json-example",
+  "input": "3a100e0000",
+  "expect": "{\"sector\":7,\"contacts\":[]}",
+  "model": {
+    "xtdl.contacts.#": "0"
+  }
+}

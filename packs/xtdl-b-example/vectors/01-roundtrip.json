@@ -1,0 +1,12 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-b-example",
+  "to": "xtdl-b-example",
+  "input": "1502b92006422c409c8ca0",
+  "expect": "1502b92006422c409c8ca0",
+  "model": {
+    "xtdl.sector": "19",
+    "xtdl.status": "active",
+    "xtdl.day_s": "72000"
+  }
+}

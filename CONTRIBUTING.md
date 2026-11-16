@@ -1,0 +1,101 @@
+# Contributing
+
+This repository is a worked example of a private overlay for [`goat-transformers`](https://github.com/USAREUR-AF/goat-transformers). This page is the whole process.
+
+## The one rule of this repository
+
+Everything here is fictional. A contribution must not hold a field layout, a name, a number or a value taken from a real format, standard, product or organization. If you are not sure that something is invented, do not submit it.
+
+Changes to the engines, the specification or the public packs go to `goat-transformers`, not here.
+
+## The short version
+
+1. Fork, or branch from `main` if you have write access. Branch names: `feat/<topic>`, `fix/<topic>`, `docs/<topic>`.
+2. Make the change. When you change a layout, change `tools/vectors.py` to match and run `python3 tools/vectors.py` to write the vectors again; the expected bytes come from that script, never from an engine.
+3. Run `./check.sh` (or `./check.sh --core-dir <checkout of goat-transformers>`). It must end with `check: ok`.
+4. Commit with a [Conventional Commits](https://www.conventionalcommits.org/) subject and a DCO sign-off: `git commit -s -m "fix(packs): …"`.
+5. Open a pull request against `main`. One approving review from a code owner merges it, by squash.
+
+## Commits
+
+- **Conventional Commits.** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, with a scope in parentheses (`feat(packs): …`). The subject is at most 100 characters and says what changed, in the imperative.
+- **DCO sign-off on every commit** (`git commit -s`). By signing off you certify the [Developer Certificate of Origin 1.1](https://developercertificate.org/): you wrote the change or have the right to submit it under this project's license. There is no CLA. The policy is in [Policy](#policy).
+- **Signed commits** are required on `main`; set up [SSH or GPG commit signing](https://docs.github.com/en/authentication/managing-commit-signature-verification) once.
+- One logical change per pull request.
+
+## Moving `core.ref`
+
+`core.ref` holds the commit of `goat-transformers` this example builds with. Move it in a pull request of its own, with whatever pack changes the new commit needs, and run `./check.sh`.
+
+## Reporting a bug
+
+Open an issue. For a vulnerability, or for content that is not fictional, **do not open an issue**: follow [SECURITY.md](SECURITY.md).
+
+## License
+
+Portions written by U.S. Federal government employees within the scope of their employment are not subject to copyright in the U.S.; in countries where copyright is recognized, they and all other contributions are licensed under the [Apache License 2.0](LICENSE). Contributions are accepted under the [Policy](#policy) below.
+
+**NOTE: This CONTRIBUTING.md is for software contributions. You do not need to follow the Developer's Certificate of Origin (DCO) process for commenting on this repository's documentation or for submitting issues.**
+
+## Policy
+
+### 1. Introduction
+
+The project maintainer for this Project will only accept contributions using the Developer's Certificate of Origin 1.1 located at [developercertificate.org](https://developercertificate.org) ("DCO"). The DCO is a legally binding statement asserting that you are the creator of your contribution, or that you otherwise have the authority to distribute the contribution, and that you are intentionally making the contribution available under the license associated with the Project ("License").
+
+### 2. Developer Certificate of Origin Process
+
+Before submitting contributing code to this repository for the first time, you'll need to sign a Developer Certificate of Origin (DCO) (see below). To agree to the DCO, add a `Signed-off-by` line to every commit with `git commit -s`. At a high level, signing off tells us that you have the right to submit the work you're contributing and indicates that you consent to our treating the contribution in a way consistent with the license associated with this software (as described in [LICENSE](LICENSE)) and its documentation ("Project").
+
+### 3. Important Points
+
+Pseudonymous or anonymous contributions are permissible, but you must be reachable at the email address provided in the Signed-off-by line.
+
+If your contribution is significant, you are also welcome to add your name and copyright date to the source file header.
+
+U.S. Federal law prevents the government from accepting gratuitous services unless certain conditions are met. By submitting a pull request, you acknowledge that your services are offered without expectation of payment and that you expressly waive any future pay claims against the U.S. Federal government related to your contribution.
+
+If you are a U.S. Federal government employee and use a `*.mil` or `*.gov` email address, we interpret your Signed-off-by to mean that the contribution was created in whole or in part by you and that your contribution is not subject to copyright protections.
+
+### 4. DCO Text
+
+The full text of the DCO is included below and is available online at [developercertificate.org](https://developercertificate.org):
+
+```txt
+Developer Certificate of Origin
+Version 1.1
+
+Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
+1 Letterman Drive
+Suite D4700
+San Francisco, CA, 94129
+
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
+
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+```

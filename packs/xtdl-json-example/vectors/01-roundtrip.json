@@ -1,0 +1,7 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-json-example",
+  "to": "xtdl-json-example",
+  "input": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00.000Z\",\"sector\":19,\"status\":\"active\",\"position\":{\"lat\":35.25,\"lon\":10.5},\"contacts\":[{\"id\":12,\"bearing_deg\":90,\"range_m\":1500},{\"id\":200,\"bearing_deg\":225,\"range_m\":12000}]}",
+  "expect": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00.000Z\",\"sector\":19,\"status\":\"active\",\"position\":{\"lat\":35.25,\"lon\":10.5},\"contacts\":[{\"id\":12,\"bearing_deg\":90,\"range_m\":1500},{\"id\":200,\"bearing_deg\":225,\"range_m\":12000}]}"
+}

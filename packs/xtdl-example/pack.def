@@ -1,0 +1,43 @@
+# xtdl-example: a FICTIONAL binary format, invented only to show the overlay
+# shape. It is not a real standard and encodes nothing real. Layout: pack.md.
+# Marked `controlled` to show the mechanics: it uses the public `core` module
+# (so position converts to every public format) and the overlay's `xtdl` module
+# (so the overlay's keys and list convert to the other overlay formats).
+format        xtdl-example
+version       0.3.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          bits
+word_bytes    1
+uses          xtdl
+
+# Common lines: every message starts with these four bytes.
+field  xtdl.sector  0:3:5    uint
+field  xtdl.day_s   1:0:24   uscale:1
+
+# Value table: the status numbers of this format and the words the model holds.
+map  status  0  idle
+map  status  1  active
+map  status  2  fault
+map  status  3  unknown
+
+# Message number 2: a counted list. Byte 4 holds the number of contacts and
+# each contact is 3 bytes.
+kind      contacts
+when      0:0:3  2
+requires  xtdl.contacts
+group  xtdl.contacts  5:0  item 24  count 4:0:8
+  field  xtdl.contact_id   0:0:8   uint
+  field  xtdl.bearing_deg  0:8:8   uscale:45/32
+  field  xtdl.range_m      0:16:8  uscale:100
+end
+
+# Message number 1: a position.
+kind      position
+when      0:0:3  1
+requires  lat lon
+field    lat          4:0:32   sscale:1/10000000
+field    lon          8:0:32   sscale:1/10000000
+field    xtdl.status  12:0:2   uint  via status
+default  xtdl.status  unknown    # written when the source format holds no status
+const    12:4:4  5               # always written; not checked when read

@@ -1,0 +1,15 @@
+{
+  "name": "position-roundtrip",
+  "from": "xtdl-example",
+  "to": "xtdl-example",
+  "input": "9940190120b90215402c420651",
+  "expect": "9940190120b90215402c420651",
+  "model": {
+    "@kind": "position",
+    "xtdl.sector": "19",
+    "xtdl.day_s": "72000",
+    "lat": "35.25",
+    "lon": "10.5",
+    "xtdl.status": "active"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "unknown-message-number",
+  "from": "xtdl-example",
+  "to": "xtdl-example",
+  "input": "9f000000000000000000000000",
+  "expect_error": "no-kind"
+}

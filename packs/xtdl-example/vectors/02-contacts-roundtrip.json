@@ -1,0 +1,14 @@
+{
+  "name": "contacts-roundtrip",
+  "from": "xtdl-example",
+  "to": "xtdl-example",
+  "input": "3a100e00020c400fc8a078",
+  "expect": "3a100e00020c400fc8a078",
+  "model": {
+    "@kind": "contacts",
+    "xtdl.contacts.#": "2",
+    "xtdl.contacts[0].xtdl.contact_id": "12",
+    "xtdl.contacts[0].xtdl.bearing_deg": "90",
+    "xtdl.contacts[1].xtdl.range_m": "12000"
+  }
+}

@@ -1,0 +1,24 @@
+# xtdl-b-example: a second FICTIONAL binary format, invented only for this
+# example. Layout: pack.md. It maps the same keys as `xtdl-example` position
+# messages in a different byte order, with other status numbers and another
+# time step, so a conversion between the two changes every byte and loses
+# nothing.
+format        xtdl-b-example
+version       0.3.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          bits
+word_bytes    1
+bit_order     msb
+uses          xtdl
+
+map  status  0  unknown
+map  status  1  idle
+map  status  2  active
+map  status  3  fault
+
+field  lat          0:0:32   sscale:1/10000000
+field  lon          4:0:32   sscale:1/10000000
+field  xtdl.sector  8:0:5    uint
+field  xtdl.status  8:5:2    uint  via status
+field  xtdl.day_s   9:0:16   uscale:2

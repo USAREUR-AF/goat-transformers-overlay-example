@@ -1,0 +1,22 @@
+# xtdl-json-example: a third FICTIONAL format, invented only for this example,
+# on the `json` wire. It holds the same list of contacts as `xtdl-example`
+# contact messages, as a JSON array, and the full time of the report in the
+# public key `time_ms`.
+format        xtdl-json-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          json
+uses          xtdl
+
+field  uid          id            string
+field  time_ms      time          iso8601_ms
+field  xtdl.sector  sector        int
+field  xtdl.status  status        string
+field  lat          position.lat  float
+field  lon          position.lon  float
+group  xtdl.contacts  contacts
+  field  xtdl.contact_id   id           int
+  field  xtdl.bearing_deg  bearing_deg  float
+  field  xtdl.range_m      range_m      float
+end

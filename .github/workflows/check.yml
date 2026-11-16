@@ -1,0 +1,20 @@
+# Assemble the pinned library with this overlay and run ./check.sh: the Rust
+# engine's tests on the assembled tree, and the refusal of the overlay by an
+# engine limited to public content.
+name: check
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: ./check.sh
