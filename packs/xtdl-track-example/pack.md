@@ -31,6 +31,13 @@ sector 19        = 0x13        ->  13
 The same report with no position: `00 00 00 80 00 00 00 80 7d 00 13`; decode
 gives `speed_ms` and `xtdl.sector` and leaves `lat` and `lon` absent.
 
+## Rounding and range (engine-spec 0.11)
+
+A speed is written as the nearest number of 0.1 m/s steps, a value exactly
+halfway rounded away from zero: 0.25 m/s is 2.5 steps and is written as 3.
+A speed of more than 65535 steps (6553.5 m/s) does not fit the field and fails
+with `transform-encode`; the field's low bits are never written.
+
 ## Not mapped
 
 Nothing: every byte is a field.

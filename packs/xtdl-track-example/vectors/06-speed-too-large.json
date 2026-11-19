@@ -1,0 +1,7 @@
+{
+  "name": "speed-too-large",
+  "from": "geojson",
+  "to": "xtdl-track-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"speed_ms\":6553.6}}",
+  "expect_error": "transform-encode"
+}
