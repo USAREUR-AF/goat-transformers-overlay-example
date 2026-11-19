@@ -1,0 +1,21 @@
+# xtdl-text-example: a FICTIONAL text format, invented only for this example.
+# It shows the `text` wire (engine-spec 0.10): a record of comma-separated
+# fields with a start marker and a checksum. Layout: pack.md.
+format        xtdl-text-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          text
+start         "$"
+checksum      nmea
+uses          xtdl
+
+kind      position
+when      0  XTPOS
+requires  lat lon
+field     xtdl.sector  1     int:2
+field     lat          2+3   dm:2:4:NS
+field     lon          4+5   dm:3:4:EW
+field     xtdl.day_s   6     hms:0
+field     xtdl.status  7     string
+default   xtdl.status  unknown

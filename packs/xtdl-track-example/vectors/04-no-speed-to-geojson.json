@@ -1,0 +1,14 @@
+{
+  "name": "no-speed-to-geojson",
+  "from": "xtdl-track-example",
+  "to": "geojson",
+  "input": "20b90215402c4206ffffff",
+  "expect": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{}}",
+  "model": {
+    "lat": "35.25",
+    "@absent": [
+      "speed_ms",
+      "xtdl.sector"
+    ]
+  }
+}

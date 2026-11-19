@@ -62,7 +62,7 @@ The `distribution` line is what the engines enforce:
 
 ## The example formats
 
-Three invented formats and one invented model module. They are marked
+Five invented formats and one invented model module. They are marked
 `distribution controlled` only to show the mechanics.
 
 | File | What it is | What it shows |
@@ -71,6 +71,8 @@ Three invented formats and one invented model module. They are marked
 | `packs/xtdl-example/` | binary, two message layouts | message kinds chosen by a number on the wire (`kind`, `when`, `requires`); a value table (`map`, `via`); a `default`; a `const`; a counted list (`group ... count`) |
 | `packs/xtdl-b-example/` | binary, other byte order, other status numbers, other time step | the same keys in a different layout; a second value table for the same key |
 | `packs/xtdl-json-example/` | JSON | the same list as a JSON array (`group`); the full time in `time_ms` |
+| `packs/xtdl-track-example/` | binary | no-value codes on the wire (`absent`, engine-spec 0.9): a field holding its code leaves the key absent, and a key the entity lacks is written as the code |
+| `packs/xtdl-text-example/` | text line with `$` and a checksum | the `text` wire (engine-spec 0.10): comma-separated fields, degrees and minutes (`dm`), a time of day (`hms`), an NMEA-style checksum |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -127,7 +129,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the three overlay formats among them
+# the formats the engine loaded, the five overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -163,7 +165,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the three format names and the GeoJSON conversion
+8. In `check.sh`, replace the five format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.

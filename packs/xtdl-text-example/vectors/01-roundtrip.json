@@ -1,0 +1,15 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-text-example",
+  "to": "xtdl-text-example",
+  "input": "$XTPOS,19,3515.0000,N,01030.0000,E,200000,active*51",
+  "expect": "$XTPOS,19,3515.0000,N,01030.0000,E,200000,active*51",
+  "model": {
+    "@kind": "position",
+    "xtdl.sector": "19",
+    "lat": "35.25",
+    "lon": "10.5",
+    "xtdl.day_s": "72000",
+    "xtdl.status": "active"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "bad-checksum",
+  "from": "xtdl-text-example",
+  "to": "xtdl-text-example",
+  "input": "$XTPOS,19,3515.0000,N,01030.0000,E,200000,active*00",
+  "expect_error": "malformed-wire"
+}

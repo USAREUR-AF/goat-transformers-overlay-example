@@ -1,0 +1,11 @@
+{
+  "name": "southern-western",
+  "from": "xtdl-text-example",
+  "to": "xtdl-text-example",
+  "input": "$XTPOS,19,3515.0000,S,01030.0000,W,200000,idle*56",
+  "expect": "$XTPOS,19,3515.0000,S,01030.0000,W,200000,idle*56",
+  "model": {
+    "lat": "-35.25",
+    "lon": "-10.5"
+  }
+}

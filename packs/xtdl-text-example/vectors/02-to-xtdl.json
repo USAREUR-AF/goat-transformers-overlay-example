@@ -1,0 +1,7 @@
+{
+  "name": "to-xtdl",
+  "from": "xtdl-text-example",
+  "to": "xtdl-example",
+  "input": "$XTPOS,19,3515.0000,N,01030.0000,E,200000,active*51",
+  "expect": "9940190120b90215402c420651"
+}
