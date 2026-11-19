@@ -1,0 +1,7 @@
+{
+  "name": "position-sets-the-flag",
+  "from": "geojson",
+  "to": "xtdl-flag-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"speed_ms\":12.5}}",
+  "expect": "{\"position_sent\":1,\"lat\":35.25,\"lon\":10.5,\"speed_ms\":12.5}"
+}

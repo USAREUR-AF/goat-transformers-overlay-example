@@ -62,17 +62,18 @@ The `distribution` line is what the engines enforce:
 
 ## The example formats
 
-Five invented formats and one invented model module. They are marked
+Six invented formats and one invented model module. They are marked
 `distribution controlled` only to show the mechanics.
 
 | File | What it is | What it shows |
 |---|---|---|
-| `model/xtdl.def` | module `xtdl`: three keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms` |
+| `model/xtdl.def` | module `xtdl`: four keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms`; a `present` derive that sets `xtdl.position_sent` (engine-spec 0.12) |
 | `packs/xtdl-example/` | binary, two message layouts | message kinds chosen by a number on the wire (`kind`, `when`, `requires`); a value table (`map`, `via`); a `default`; a `const`; a counted list (`group ... count`) |
 | `packs/xtdl-b-example/` | binary, other byte order, other status numbers, other time step | the same keys in a different layout; a second value table for the same key |
 | `packs/xtdl-json-example/` | JSON | the same list as a JSON array (`group`); the full time in `time_ms` |
 | `packs/xtdl-track-example/` | binary | no-value codes on the wire (`absent`, engine-spec 0.9): a field holding its code leaves the key absent, and a key the entity lacks is written as the code; a scaled field rounds half away from zero and refuses a value that does not fit (engine-spec 0.11) |
 | `packs/xtdl-text-example/` | text line with `$` and a checksum | the `text` wire (engine-spec 0.10): comma-separated fields, degrees and minutes (`dm`), a time of day (`hms`), an NMEA-style checksum |
+| `packs/xtdl-flag-example/` | JSON | a flag set from whether a value is sent (`derive ... present`, engine-spec 0.12), with a `default` for "not sent" |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -129,7 +130,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the five overlay formats among them
+# the formats the engine loaded, the six overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -165,7 +166,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the five format names and the GeoJSON conversion
+8. In `check.sh`, replace the six format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.
