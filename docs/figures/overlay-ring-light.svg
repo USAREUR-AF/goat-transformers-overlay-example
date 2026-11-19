@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 592" width="880" height="592" role="img" aria-labelledby="t d">
+<title id="t">Eight fictional formats fill the private overlay ring</title>
+<desc id="d">goat-transformers, public, at core.ref e8e0921, holds the engines, the shared model and the public packs such as geojson. Around it, a dashed ring is this private overlay: eight fictional formats (xtdl-armor-example, xtdl-b-example, xtdl-example, xtdl-flag-example, xtdl-json-example, xtdl-set-example, xtdl-text-example, xtdl-track-example) and the model module xtdl, all marked distribution controlled. Every format connects to the same shared model. An engine started with --max-distribution public loads nothing from the overlay.</desc>
+<style>
+  .ink{fill:#1f2328} .quiet{fill:#59636e} .pub{fill:#0969da} .ovl{fill:#9a6700}
+  .t{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  .m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .box{fill:#0969da;fill-opacity:.08;stroke:#0969da;stroke-width:1.5}
+  .hub{fill:#0969da;fill-opacity:.18;stroke:#0969da;stroke-width:2}
+  .obox{fill:#9a6700;fill-opacity:.08;stroke:#9a6700;stroke-width:1.5;stroke-dasharray:6 4}
+  .ring{fill:none;stroke:#0969da;stroke-width:1.5}
+  .oring{fill:none;stroke:#9a6700;stroke-width:1.5;stroke-dasharray:8 6}
+  .ln{stroke:#0969da;stroke-width:1.5;fill:none}
+  .oln{stroke:#9a6700;stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+</style>
+<rect x="16" y="16" width="848" height="560" rx="18" class="oring"/>
+<text x="34" y="44" class="t ovl" font-size="14" text-anchor="start" font-weight="600">This repository, the private overlay: eight fictional formats and the model module xtdl</text>
+<rect x="220" y="72" width="440" height="440" rx="14" class="ring"/>
+<text x="238" y="100" class="t pub" font-size="14" text-anchor="start" font-weight="600">goat-transformers, public, at core.ref e8e0921</text>
+<path d="M350 150 L390 192" class="ln"/>
+<path d="M500 150 L490 192" class="ln"/>
+<rect x="298" y="118" width="104" height="32" rx="8" class="box"/>
+<text x="350" y="139" class="t ink" font-size="14" text-anchor="middle">geojson</text>
+<rect x="418" y="118" width="164" height="32" rx="8" class="box"/>
+<text x="500" y="139" class="t ink" font-size="14" text-anchor="middle">other public packs</text>
+<path d="M206 196 L298 244" class="oln"/>
+<path d="M206 260 L298 276" class="oln"/>
+<path d="M206 324 L298 308" class="oln"/>
+<path d="M206 388 L298 340" class="oln"/>
+<path d="M674 196 L582 244" class="oln"/>
+<path d="M674 260 L582 276" class="oln"/>
+<path d="M674 324 L582 308" class="oln"/>
+<path d="M674 388 L582 340" class="oln"/>
+<rect x="30" y="170" width="176" height="52" rx="8" class="obox"/>
+<text x="118" y="192" class="t ink" font-size="14" text-anchor="middle">xtdl-armor-example</text>
+<text x="118" y="211" class="t quiet" font-size="13" text-anchor="middle">six-bit text · 9 vectors</text>
+<rect x="30" y="234" width="176" height="52" rx="8" class="obox"/>
+<text x="118" y="256" class="t ink" font-size="14" text-anchor="middle">xtdl-b-example</text>
+<text x="118" y="275" class="t quiet" font-size="13" text-anchor="middle">binary · 2 vectors</text>
+<rect x="30" y="298" width="176" height="52" rx="8" class="obox"/>
+<text x="118" y="320" class="t ink" font-size="14" text-anchor="middle">xtdl-example</text>
+<text x="118" y="339" class="t quiet" font-size="13" text-anchor="middle">binary · 8 vectors</text>
+<rect x="30" y="362" width="176" height="52" rx="8" class="obox"/>
+<text x="118" y="384" class="t ink" font-size="14" text-anchor="middle">xtdl-flag-example</text>
+<text x="118" y="403" class="t quiet" font-size="13" text-anchor="middle">JSON · 3 vectors</text>
+<rect x="674" y="170" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="192" class="t ink" font-size="14" text-anchor="middle">xtdl-json-example</text>
+<text x="762" y="211" class="t quiet" font-size="13" text-anchor="middle">JSON · 3 vectors</text>
+<rect x="674" y="234" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="256" class="t ink" font-size="14" text-anchor="middle">xtdl-set-example</text>
+<text x="762" y="275" class="t quiet" font-size="13" text-anchor="middle">TLV · 7 vectors</text>
+<rect x="674" y="298" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="320" class="t ink" font-size="14" text-anchor="middle">xtdl-text-example</text>
+<text x="762" y="339" class="t quiet" font-size="13" text-anchor="middle">text line · 5 vectors</text>
+<rect x="674" y="362" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="384" class="t ink" font-size="14" text-anchor="middle">xtdl-track-example</text>
+<text x="762" y="403" class="t quiet" font-size="13" text-anchor="middle">binary · 6 vectors</text>
+<rect x="298" y="192" width="284" height="200" rx="12" class="hub"/>
+<text x="440" y="224" class="t ink" font-size="19" text-anchor="middle" font-weight="600">shared model</text>
+<text x="440" y="250" class="t quiet" font-size="13" text-anchor="middle" font-weight="600">public keys the overlay maps</text>
+<text x="440" y="320" class="t ovl" font-size="13" text-anchor="middle" font-weight="600">module xtdl, controlled</text>
+<text x="440" y="270" class="m quiet" font-size="13" text-anchor="middle">lat lon speed_ms callsign</text>
+<text x="440" y="288" class="m quiet" font-size="13" text-anchor="middle">time_ms uid</text>
+<text x="440" y="340" class="m ovl" font-size="13" text-anchor="middle">sector status day_s contacts</text>
+<text x="440" y="358" class="m ovl" font-size="13" text-anchor="middle">contact_id bearing_deg range_m</text>
+<text x="440" y="376" class="m ovl" font-size="13" text-anchor="middle">position_sent</text>
+<text x="440" y="428" class="t ink" font-size="14" text-anchor="middle">Overlay packs map a public key wherever one fits,</text>
+<text x="440" y="448" class="t ink" font-size="14" text-anchor="middle">so they convert to and from the public formats.</text>
+<text x="440" y="484" class="t quiet" font-size="14" text-anchor="middle">The engines are not copied or changed.</text>
+<text x="440" y="552" class="t ovl" font-size="14" text-anchor="middle">An engine started with --max-distribution public loads nothing from the dashed ring.</text>
+</svg>

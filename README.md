@@ -1,5 +1,10 @@
 # goat-transformers-overlay-example
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/overlay-ring-dark.svg">
+  <img src="docs/figures/overlay-ring-light.svg" width="760" alt="This overlay's fictional formats, each with its wire and its number of vectors, sit in a dashed outer ring around the public goat-transformers library and connect to its shared model next to public packs such as geojson; the model module xtdl adds the keys only those formats have, and an engine started with --max-distribution public loads nothing from the ring.">
+</picture>
+
 A worked example of an **overlay** for
 [`goat-transformers`](https://github.com/USAREUR-AF/goat-transformers), the
 library that converts messages between formats. Every format in this repository
