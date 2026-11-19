@@ -1,0 +1,7 @@
+{
+  "name": "no-position-writes-the-default",
+  "from": "xtdl-track-example",
+  "to": "xtdl-flag-example",
+  "input": "00000080000000807d0013",
+  "expect": "{\"position_sent\":0,\"speed_ms\":12.5}"
+}

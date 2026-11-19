@@ -16,6 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 X, B, J = "xtdl-example", "xtdl-b-example", "xtdl-json-example"
 T, TX = "xtdl-track-example", "xtdl-text-example"
+F = "xtdl-flag-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -201,6 +202,18 @@ VECTORS = [
         model={"lat": "-35.25", "lon": "-10.5"})),
     (TX, "05-bad-checksum", dict(
         to=TX, input=tx_position(**P)[:-2] + "00", expect_error="malformed-wire")),
+    (F, "01-position-sets-the-flag", dict(
+        from_="geojson", to=F,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"speed_ms": 12.5}}),
+        expect=j({"position_sent": 1, "lat": 35.25, "lon": 10.5, "speed_ms": 12.5}))),
+    (F, "02-no-position-writes-the-default", dict(
+        from_=T, to=F, input=t_track(None, None, 12.5, 19),
+        expect=j({"position_sent": 0, "speed_ms": 12.5}))),
+    (F, "03-roundtrip-keeps-the-flag", dict(
+        to=F, input=j({"position_sent": 0, "lat": 35.25, "lon": 10.5}),
+        expect=j({"position_sent": 0, "lat": 35.25, "lon": 10.5}),
+        model={"xtdl.position_sent": "0", "lat": "35.25"})),
 ]
 
 

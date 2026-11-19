@@ -1,0 +1,11 @@
+{
+  "name": "roundtrip-keeps-the-flag",
+  "from": "xtdl-flag-example",
+  "to": "xtdl-flag-example",
+  "input": "{\"position_sent\":0,\"lat\":35.25,\"lon\":10.5}",
+  "expect": "{\"position_sent\":0,\"lat\":35.25,\"lon\":10.5}",
+  "model": {
+    "xtdl.position_sent": "0",
+    "lat": "35.25"
+  }
+}

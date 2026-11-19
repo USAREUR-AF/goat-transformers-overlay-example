@@ -1,0 +1,17 @@
+# xtdl-flag-example: a FICTIONAL format, invented only for this example, on the
+# `json` wire. It shows the `present` derive function (engine-spec 0.12): the
+# flag `position_sent` is 1 when the entity carries a position, through the
+# derive line in model/xtdl.def, and 0 by this pack's default when it carries
+# none. Layout: pack.md.
+format        xtdl-flag-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          json
+uses          xtdl
+
+field    xtdl.position_sent  position_sent  int
+default  xtdl.position_sent  0
+field    lat                 lat            float
+field    lon                 lon            float
+field    speed_ms            speed_ms       float
