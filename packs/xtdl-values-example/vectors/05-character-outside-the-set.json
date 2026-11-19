@@ -1,0 +1,7 @@
+{
+  "name": "character-outside-the-set",
+  "from": "xtdl-values-example",
+  "to": "xtdl-values-example",
+  "input": "29ca35c988840164180ea93018001e6082082042fa0000",
+  "expect_error": "transform-decode"
+}

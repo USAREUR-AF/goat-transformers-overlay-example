@@ -156,8 +156,8 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) % 2:
-        raise SystemExit("make-figures: an odd number of packs (%d); the figure splits them into two columns" % len(ps))
+    if len(ps) > 10:
+        raise SystemExit("make-figures: %d packs; two columns of five is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     W, H = 880, 592
@@ -212,21 +212,26 @@ def fig_overlay_ring():
         f.text(x + w / 2, 139, name, 14, anchor="middle")
         x += w + gap
 
-    # overlay packs, two columns in the outer band
-    half = len(ps) // 2
+    # overlay packs, two columns in the outer band; with an odd count the left column has one more
+    left = (len(ps) + 1) // 2
+    cols = (ps[:left], ps[left:])
     bw, bh, bg = 176, 52, 12
-    stack = half * bh + (half - 1) * bg
-    top = cy - stack / 2
+
+    def col_top(col):
+        k = len(cols[col])
+        return cy - (k * bh + (k - 1) * bg) / 2
     for col, xs in ((0, 30), (1, W - 30 - bw)):
-        for i, p in enumerate(ps[col * half:(col + 1) * half]):
+        top, k = col_top(col), len(cols[col])
+        for i, p in enumerate(cols[col]):
             y = top + i * (bh + bg)
-            ey = cy - 48 + 96 * i / max(half - 1, 1)
+            ey = cy - 48 + 96 * i / max(k - 1, 1)
             if col == 0:
                 f.path("M%s %s L%s %s" % (n(xs + bw), n(y + bh / 2), n(hx0), n(ey)), "oln")
             else:
                 f.path("M%s %s L%s %s" % (n(xs), n(y + bh / 2), n(hx1), n(ey)), "oln")
     for col, xs in ((0, 30), (1, W - 30 - bw)):
-        for i, p in enumerate(ps[col * half:(col + 1) * half]):
+        top = col_top(col)
+        for i, p in enumerate(cols[col]):
             y = top + i * (bh + bg)
             f.rect(xs, y, bw, bh, "obox")
             f.text(xs + bw / 2, y + 22, p["name"], 14, anchor="middle")
