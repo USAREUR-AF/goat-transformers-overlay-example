@@ -17,6 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 X, B, J = "xtdl-example", "xtdl-b-example", "xtdl-json-example"
 T, TX = "xtdl-track-example", "xtdl-text-example"
 F = "xtdl-flag-example"
+S = "xtdl-set-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -98,6 +99,45 @@ def tx_position(sector, day_s, lat, lon, status):
     body = "XTPOS,%02d,%s,%s,%s,%s,%02d%02d%02d,%s" % (sector, la, ns, lo, ew, h, rem // 60, rem % 60, status)
     return "$" + body + "*" + nmea_xor(body)
 
+S_KEY = bytes.fromhex("7874646c")   # xtdl-set-example: the four-byte key
+
+
+def ber(n):
+    """A BER length: one byte below 128, else 0x80 + count, then the count's bytes."""
+    if n < 128:
+        return bytes([n])
+    size = (n.bit_length() + 7) // 8
+    return bytes([0x80 | size]) + n.to_bytes(size, "big")
+
+
+def tlv_item(tag, value):
+    return bytes([tag]) + ber(len(value)) + value
+
+
+def s_set(time_ms=None, callsign=None, lat=None, lon=None, sector=None, speed_ms=None, residue=b""):
+    """xtdl-set-example: the mapped items in line order, residue, then the checksum item."""
+    body = b""
+    if time_ms is not None:
+        body += tlv_item(2, be(time_ms, 8))
+    if callsign is not None:
+        body += tlv_item(3, callsign.encode("utf-8"))
+    if lat is not None:
+        body += tlv_item(4, be(deg7(lat), 4))
+    if lon is not None:
+        body += tlv_item(5, be(deg7(lon), 4))
+    nested = b""
+    if sector is not None:
+        nested += tlv_item(1, bytes([sector]))
+    if speed_ms is not None:
+        nested += tlv_item(2, be(round(speed_ms * 10), 2))
+    if nested:
+        body += tlv_item(6, nested)
+    body += residue
+    # the checksum item (tag 1, length 2, two bytes) is the last item and counts in the length
+    head = S_KEY + ber(len(body) + 4) + body + bytes([1, 2])
+    total = sum(b * 256 if i % 2 == 0 else b for i, b in enumerate(head)) % 65536
+    return (head + be(total, 2)).hex()
+
 
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
@@ -112,6 +152,7 @@ def j_contacts(contacts):
 P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20:00:00 UTC
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
+SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
 
 VECTORS = [
     (X, "01-position-roundtrip", dict(
@@ -214,6 +255,28 @@ VECTORS = [
         to=F, input=j({"position_sent": 0, "lat": 35.25, "lon": 10.5}),
         expect=j({"position_sent": 0, "lat": 35.25, "lon": 10.5}),
         model={"xtdl.position_sent": "0", "lat": "35.25"})),
+    (S, "01-roundtrip", dict(
+        to=S, input=s_set(**SET), expect=s_set(**SET),
+        model={"time_ms": "1614456000000", "callsign": "XT-19", "lat": "35.25", "lon": "10.5",
+               "xtdl.sector": "19", "speed_ms": "12.5"})),
+    (S, "02-unknown-item-kept-as-residue", dict(
+        to=S, input=s_set(**SET, residue=tlv_item(9, b"\xab\xcd")),
+        expect=s_set(**SET, residue=tlv_item(9, b"\xab\xcd")))),
+    (S, "03-from-geojson", dict(
+        from_="geojson", to=S,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"time_ms": 1614456000000, "speed_ms": 12.5}}),
+        expect=s_set(time_ms=1614456000000, lat=35.25, lon=10.5, speed_ms=12.5))),
+    (S, "04-to-xtdl-track", dict(
+        to=T, input=s_set(**SET), expect=t_track(35.25, 10.5, 12.5, 19))),
+    (S, "05-long-callsign-long-form-lengths", dict(
+        to=S, input=s_set(**dict(SET, callsign="X" * 200)),
+        expect=s_set(**dict(SET, callsign="X" * 200)))),
+    (S, "06-bad-checksum", dict(
+        to=S, input=s_set(**SET)[:-2] + "00", expect_error="malformed-wire")),
+    (S, "07-empty-nested-set-not-written", dict(
+        from_=T, to=S, input=t_track(35.25, 10.5, None, None),
+        expect=s_set(lat=35.25, lon=10.5))),
 ]
 
 

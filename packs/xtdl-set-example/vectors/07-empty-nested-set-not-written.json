@@ -1,0 +1,7 @@
+{
+  "name": "empty-nested-set-not-written",
+  "from": "xtdl-track-example",
+  "to": "xtdl-set-example",
+  "input": "20b90215402c4206ffffff",
+  "expect": "7874646c1004041502b920050406422c4001029bea"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "bad-checksum",
+  "from": "xtdl-set-example",
+  "to": "xtdl-set-example",
+  "input": "7874646c2a020800000177e5138e00030558542d313904041502b920050406422c4006070101130202007d0102c900",
+  "expect_error": "malformed-wire"
+}

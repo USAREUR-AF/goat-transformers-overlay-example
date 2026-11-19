@@ -1,0 +1,21 @@
+# xtdl-set-example: a FICTIONAL format, invented only for this example, on the
+# `tlv` wire (engine-spec 0.13): a set of items, each a one-byte tag, a length
+# and a value, after a fixed four-byte key, with a checksum item last. Item 6
+# holds a nested set. Layout: pack.md.
+format        xtdl-set-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          tlv
+tag           1
+length        ber
+key           7874646c
+checksum      sum16 1
+uses          xtdl
+
+field  time_ms      2:8    uint
+field  callsign     3      utf8
+field  lat          4:4    sscale:1/10000000
+field  lon          5:4    sscale:1/10000000
+field  xtdl.sector  6.1:1  uint
+field  speed_ms     6.2:2  uscale:1/10
