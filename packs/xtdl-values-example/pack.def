@@ -1,0 +1,19 @@
+# xtdl-values-example: a FICTIONAL format, invented only for this example: a
+# 23-byte binary report that shows the value transforms of engine-spec 0.15
+# (octal digits, sign and magnitude, an integer scale, a 6-bit character set
+# and a scaled IEEE float). Layout: pack.md.
+format        xtdl-values-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+word_bytes    1
+bit_order     msb
+
+field  uid        0:0:15     octal
+field  lat        0:15:25    smscale:1/100000
+field  lon        0:40:26    smscale:1/100000
+field  time_ms    0:66:32    uiscale:1000
+field  callsign   0:98:54    chars:icao6
+field  speed_ms   0:152:32   f32scale:1/10

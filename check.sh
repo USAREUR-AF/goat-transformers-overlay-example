@@ -8,7 +8,7 @@
 #   1. the vector files equal what tools/vectors.py computes
 #   2. assemble.sh builds a tree from the library and this overlay
 #   3. the Rust engine's tests pass on that tree (library and overlay vectors)
-#   4. the engine lists the eight overlay formats
+#   4. the engine lists the nine overlay formats
 #   5. a public format converts into an overlay format
 #   6. an engine limited to public content refuses the tree: distribution-refused
 set -euo pipefail
@@ -38,10 +38,10 @@ cargo test --release 2>&1 | tee "$work/test.log" | grep -E '^(test |test result:
 [ "${PIPESTATUS[0]}" -eq 0 ] || { cat "$work/test.log"; fail "cargo test failed on the assembled tree"; }
 
 formats="$(cargo run --release -q -- list-formats)"
-for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example; do
+for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example xtdl-values-example; do
   echo "$formats" | grep -qx "$f" || fail "the engine does not list $f"
 done
-echo "check: the engine lists the eight overlay formats"
+echo "check: the engine lists the nine overlay formats"
 
 # A public format into an overlay format: position carries, the time of day is
 # derived from time_ms, and the status is the pack's default.

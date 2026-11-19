@@ -9,6 +9,7 @@ then checked against these files (./check.sh).
   python3 tools/vectors.py --check   exit 1 when a file on disk differs
 """
 import json
+import struct
 import os
 import sys
 
@@ -19,6 +20,7 @@ T, TX = "xtdl-track-example", "xtdl-text-example"
 F = "xtdl-flag-example"
 S = "xtdl-set-example"
 A = "xtdl-armor-example"
+V = "xtdl-values-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -175,6 +177,28 @@ def a_position(sector, lat, lon, callsign, speed_ms=None, fill="", kind=9):
     return armor(bits + fill)
 
 
+def smag(value, width):
+    """Sign and magnitude: the top bit is the sign (1 negative), the rest |value|."""
+    return ("1" if value < 0 else "0") + ubits(abs(value), width - 1)
+
+
+def icao6(text, chars):
+    """6-bit characters: A-Z are 1-26, space 32, 0-9 are 48-57; padded with spaces."""
+    return "".join(ubits(ord(c) - 64 if "A" <= c <= "Z" else ord(c), 6) for c in text.ljust(chars))
+
+
+def v_report(uid, lat, lon, time_s, callsign, speed_ms, lat_bits=None):
+    """xtdl-values-example: 184 bits, most significant first, as hex."""
+    bits = (ubits(int(uid, 8), 15)
+            + (lat_bits if lat_bits is not None else smag(round(lat * 100000), 25))
+            + smag(round(lon * 100000), 26)
+            + ubits(time_s, 32)
+            + icao6(callsign, 9)
+            + ubits(struct.unpack(">I", struct.pack(">f", speed_ms * 10))[0], 32))
+    assert len(bits) == 184
+    return int(bits, 2).to_bytes(23, "big").hex()
+
+
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
     return json.dumps(members, separators=(",", ":"))
@@ -188,6 +212,7 @@ def j_contacts(contacts):
 P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20:00:00 UTC
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
+VR = dict(uid="12345", lat=35.25, lon=-10.5, time_s=1614456000, callsign="XT19", speed_ms=12.5)
 AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
 
@@ -341,6 +366,23 @@ VECTORS = [
         to=A, input=a_position(**AR)[:10], expect_error="malformed-wire")),
     (A, "09-unknown-message-type", dict(
         to=A, input=a_position(**dict(AR, kind=8)), expect_error="no-kind")),
+    (V, "01-roundtrip", dict(
+        to=V, input=v_report(**VR), expect=v_report(**VR),
+        model={"uid": "12345", "lat": "35.25", "lon": "-10.5", "time_ms": "1614456000000",
+               "callsign": "XT19", "speed_ms": "12.5"})),
+    (V, "02-to-xtdl-track", dict(
+        to=T, input=v_report(**VR), expect=t_track(35.25, -10.5, 12.5, None))),
+    (V, "03-negative-zero-written-with-sign-0", dict(
+        # latitude: sign bit 1 with magnitude 0 reads as 0 and is written back with sign 0
+        to=V, input=v_report(**VR, lat_bits="1" + "0" * 24),
+        expect=v_report(**dict(VR, lat=0)),
+        model={"lat": "0"})),
+    (V, "04-leading-zero-octal-digits", dict(
+        to=V, input=v_report(**dict(VR, uid="00017")), expect=v_report(**dict(VR, uid="00017")),
+        model={"uid": "00017"})),
+    (V, "05-character-outside-the-set", dict(
+        # code 0 is not a character of the 6-bit set
+        to=V, input=v_report(**VR)[:26] + "00" + v_report(**VR)[28:], expect_error="transform-decode")),
 ]
 
 
