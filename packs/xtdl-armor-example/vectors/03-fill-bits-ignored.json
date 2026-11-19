@@ -1,0 +1,7 @@
+{
+  "name": "fill-bits-ignored",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9V:5LV060QH65;LN@0?",
+  "expect": "9V:5LV060QH65;LN@00"
+}

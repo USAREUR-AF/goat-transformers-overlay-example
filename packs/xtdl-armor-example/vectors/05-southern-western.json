@@ -1,0 +1,11 @@
+{
+  "name": "southern-western",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9WmrSJ7qwN`65;LN@01u",
+  "expect": "9WmrSJ7qwN`65;LN@01u",
+  "model": {
+    "lat": "-35.25",
+    "lon": "-10.5"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "character-outside-the-armor",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9V:5LV060QH65;LN@01X",
+  "expect_error": "malformed-wire"
+}
