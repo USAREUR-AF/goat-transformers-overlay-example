@@ -156,8 +156,6 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) % 2:
-        raise SystemExit("make-figures: an odd number of packs (%d); the figure splits them into two columns" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     W, H = 880, 592
@@ -190,10 +188,13 @@ def fig_overlay_ring():
                 rows.append(k)
         return rows
     pub_rows, mod_rows = rows_of(public_keys()), rows_of(mod["keys"])
-    if len(pub_rows) != 2 or len(mod_rows) != 3:
+    if len(pub_rows) != 2 or len(mod_rows) not in (3, 4):
         raise SystemExit("make-figures: key rows changed (%d public, %d module); re-lay the hub"
                          % (len(pub_rows), len(mod_rows)))
-    hy1 = hy0 + 200
+    # a fourth row of module keys grows the hub upward; its bottom stays put
+    extra = 18 * (len(mod_rows) - 3)
+    hy0 -= extra
+    hy1 = hy0 + 200 + extra
     hx0, hx1 = cx - hw / 2, cx + hw / 2
     cy = (hy0 + hy1) / 2
 
@@ -212,21 +213,26 @@ def fig_overlay_ring():
         f.text(x + w / 2, 139, name, 14, anchor="middle")
         x += w + gap
 
-    # overlay packs, two columns in the outer band
-    half = len(ps) // 2
+    # overlay packs, two columns in the outer band; with an odd number the left
+    # column holds one more, and each column is centred on the hub
+    half = (len(ps) + 1) // 2
     bw, bh, bg = 176, 52, 12
-    stack = half * bh + (half - 1) * bg
-    top = cy - stack / 2
-    for col, xs in ((0, 30), (1, W - 30 - bw)):
-        for i, p in enumerate(ps[col * half:(col + 1) * half]):
+    columns = ((0, 30, ps[:half]), (1, W - 30 - bw, ps[half:]))
+
+    def top_of(count):
+        return cy - (count * bh + (count - 1) * bg) / 2
+    for col, xs, cps in columns:
+        top = top_of(len(cps))
+        for i, p in enumerate(cps):
             y = top + i * (bh + bg)
-            ey = cy - 48 + 96 * i / max(half - 1, 1)
+            ey = cy - 48 + 96 * i / max(len(cps) - 1, 1)
             if col == 0:
                 f.path("M%s %s L%s %s" % (n(xs + bw), n(y + bh / 2), n(hx0), n(ey)), "oln")
             else:
                 f.path("M%s %s L%s %s" % (n(xs), n(y + bh / 2), n(hx1), n(ey)), "oln")
-    for col, xs in ((0, 30), (1, W - 30 - bw)):
-        for i, p in enumerate(ps[col * half:(col + 1) * half]):
+    for col, xs, cps in columns:
+        top = top_of(len(cps))
+        for i, p in enumerate(cps):
             y = top + i * (bh + bg)
             f.rect(xs, y, bw, bh, "obox")
             f.text(xs + bw / 2, y + 22, p["name"], 14, anchor="middle")

@@ -1,0 +1,12 @@
+{
+  "name": "all-spaces-call-sign-reads-absent",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b0001502b92006422c4042fa000080310a13820820820820",
+  "expect": "3c05bc56d462b0001502b92006422c4042fa000080310a13820820820820",
+  "model": {
+    "@absent": [
+      "callsign"
+    ]
+  }
+}

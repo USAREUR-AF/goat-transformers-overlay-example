@@ -1,0 +1,10 @@
+{
+  "name": "negative-zero-offset-reads-0-written-with-sign-0",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b0001502b92006422c4042fa000080010a13614c79820820",
+  "expect": "3c05bc56d462b0001502b92006422c4042fa000000010a13614c79820820",
+  "model": {
+    "xtdl.lane_offset_m": "0"
+  }
+}

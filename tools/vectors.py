@@ -10,6 +10,7 @@ then checked against these files (./check.sh).
 """
 import json
 import os
+import struct
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,6 +20,7 @@ T, TX = "xtdl-track-example", "xtdl-text-example"
 F = "xtdl-flag-example"
 S = "xtdl-set-example"
 A = "xtdl-armor-example"
+SC = "xtdl-scaled-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -175,6 +177,59 @@ def a_position(sector, lat, lon, callsign, speed_ms=None, fill="", kind=9):
     return armor(bits + fill)
 
 
+SC_NO_POS = 1 << 31   # xtdl-scaled-example: sign 1, magnitude 0 (a negative zero) means "no position"
+ICAO6 = {**{chr(0x40 + i): i for i in range(1, 27)}, " ": 32, **{str(d): 48 + d for d in range(10)}}
+
+
+def smag_bits(value, width):
+    """Sign and magnitude: the first bit 1 for a negative value, then |value|."""
+    assert abs(value) < 1 << (width - 1)
+    return ("1" if value < 0 else "0") + ubits(abs(value), width - 1)
+
+
+def icao6_text(text, chars):
+    """Text as icao6 codes (A-Z 1-26, space 32, 0-9 48-57), padded with spaces."""
+    return "".join(ubits(ICAO6[c], 6) for c in text.ljust(chars, " "))
+
+
+def f32_bits(x):
+    """A double narrowed to the nearest IEEE single, most significant byte first, as bits."""
+    return ubits(int.from_bytes(struct.pack(">f", x), "big"), 32)
+
+
+def sc_speed(speed_ms):
+    """f32scale:1/10 encode (ruling 1 of 0.5): (x - 0) * 10 / 1 in doubles, then as f32."""
+    return f32_bits((speed_ms - 0.0) * 10 / 1)
+
+
+def sc_report(time_us=None, lat=None, lon=None, speed_ms=None, lane_offset_m=None, unit_code=None,
+              sector=None, callsign=None, kind=60, raw_lat=None, raw_lon=None, raw_offset=None,
+              raw_speed=None, raw_callsign=None):
+    """xtdl-scaled-example. An absent key writes zero bits, or its no-value code where
+    the pack has one; a raw_* argument writes those bits as they are."""
+    def pos(value, raw):
+        if raw is not None:
+            return ubits(raw, 32)
+        return ubits(SC_NO_POS, 32) if value is None else smag_bits(deg7(value), 32)
+    bits = ubits(kind, 8) + ubits(time_us or 0, 56) + pos(lat, raw_lat) + pos(lon, raw_lon)
+    if raw_speed is not None:
+        bits += ubits(raw_speed, 32)
+    else:
+        bits += ubits(0, 32) if speed_ms is None else sc_speed(speed_ms)
+    if raw_offset is not None:
+        bits += ubits(raw_offset, 12)
+    else:
+        bits += ubits(0, 12) if lane_offset_m is None else smag_bits(lane_offset_m, 12)
+    bits += ubits(0 if unit_code is None else int(unit_code, 8), 12)
+    bits += ubits(sector or 0, 8)
+    if raw_callsign is not None:
+        bits += ubits(raw_callsign, 48)
+    else:
+        bits += icao6_text(callsign or "", 8)
+    assert len(bits) == 240
+    return int(bits, 2).to_bytes(30, "big").hex()
+
+
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
     return json.dumps(members, separators=(",", ":"))
@@ -189,6 +244,9 @@ P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
 AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
+SC_T = 1614456000000 * 1000                                                    # 2021-02-27T20:00:00Z in microseconds
+SCR = dict(time_us=SC_T, lat=35.25, lon=10.5, speed_ms=12.5, lane_offset_m=-3, unit_code="0412",
+           sector=19, callsign="XT19")
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
 
 VECTORS = [
@@ -341,6 +399,62 @@ VECTORS = [
         to=A, input=a_position(**AR)[:10], expect_error="malformed-wire")),
     (A, "09-unknown-message-type", dict(
         to=A, input=a_position(**dict(AR, kind=8)), expect_error="no-kind")),
+    (SC, "01-roundtrip", dict(
+        to=SC, input=sc_report(**SCR), expect=sc_report(**SCR),
+        model={"@kind": "report", "time_ms": "1614456000000", "lat": "35.25", "lon": "10.5",
+               "speed_ms": "12.5", "xtdl.lane_offset_m": "-3", "xtdl.unit_code": "0412",
+               "xtdl.sector": "19", "callsign": "XT19"})),
+    (SC, "02-half-millisecond-rounds-away-from-zero", dict(
+        # 1614456000000500 us is 1614456000000.5 ms: rounds to ...001, written back as ...001000 us
+        to=SC, input=sc_report(**dict(SCR, time_us=SC_T + 500)),
+        expect=sc_report(**dict(SCR, time_us=SC_T + 1000)),
+        model={"time_ms": "1614456000001"})),
+    (SC, "03-sub-millisecond-rounds-down", dict(
+        to=SC, input=sc_report(**dict(SCR, time_us=SC_T + 499)), expect=sc_report(**SCR),
+        model={"time_ms": "1614456000000"})),
+    (SC, "04-southern-western-and-largest-values", dict(
+        to=SC, input=sc_report(**dict(SCR, lat=-35.25, lon=-10.5, lane_offset_m=-2047, unit_code="7777")),
+        expect=sc_report(**dict(SCR, lat=-35.25, lon=-10.5, lane_offset_m=-2047, unit_code="7777")),
+        model={"lat": "-35.25", "lon": "-10.5", "xtdl.lane_offset_m": "-2047", "xtdl.unit_code": "7777"})),
+    (SC, "05-negative-zero-position-reads-absent", dict(
+        to=SC, input=sc_report(**dict(SCR, lat=None, lon=None)),
+        expect=sc_report(**dict(SCR, lat=None, lon=None)),
+        model={"@absent": ["lat", "lon"], "callsign": "XT19"})),
+    (SC, "06-negative-zero-offset-reads-0-written-with-sign-0", dict(
+        to=SC, input=sc_report(**dict(SCR, lane_offset_m=None, raw_offset=0x800)),
+        expect=sc_report(**dict(SCR, lane_offset_m=0)),
+        model={"xtdl.lane_offset_m": "0"})),
+    (SC, "07-zero-position-writes-sign-0", dict(
+        to=SC, input=sc_report(**dict(SCR, lat=0.0, lon=0.0)),
+        expect=sc_report(**dict(SCR, lat=0.0, lon=0.0)),
+        model={"lat": "0", "lon": "0"})),
+    (SC, "08-all-spaces-call-sign-reads-absent", dict(
+        to=SC, input=sc_report(**dict(SCR, callsign=None)), expect=sc_report(**dict(SCR, callsign=None)),
+        model={"@absent": ["callsign"]})),
+    (SC, "09-call-sign-code-0-is-transform-decode", dict(
+        # zero bits, as an encoder with no `absent` would write an absent call sign
+        to=SC, input=sc_report(**dict(SCR, raw_callsign=0)), expect_error="transform-decode")),
+    (SC, "10-speed-keeps-its-single-precision-bits", dict(
+        # 123.4 as a single is 123.400001525878906 25; times 1/10 in doubles, then back
+        to=SC, input=sc_report(**dict(SCR, speed_ms=12.34)), expect=sc_report(**dict(SCR, speed_ms=12.34)),
+        model={"speed_ms": repr(struct.unpack(">f", struct.pack(">f", 123.4))[0] * 1 / 10)})),
+    (SC, "11-speed-nan-is-transform-decode", dict(
+        to=SC, input=sc_report(**dict(SCR, raw_speed=0x7FC00000)), expect_error="transform-decode")),
+    (SC, "12-to-xtdl-track", dict(
+        to=T, input=sc_report(**SCR), expect=t_track(35.25, 10.5, 12.5, 19))),
+    (SC, "13-to-geojson", dict(
+        to="geojson", input=sc_report(**SCR),
+        expect=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                  "properties": {"time_ms": 1614456000000, "callsign": "XT19", "speed_ms": 12.5}}))),
+    (SC, "14-from-geojson", dict(
+        from_="geojson", to=SC,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"time_ms": 1614456000000}}),
+        expect=sc_report(time_us=SC_T, lat=35.25, lon=10.5))),
+    (SC, "15-too-short", dict(
+        to=SC, input=sc_report(**SCR)[:58], expect_error="malformed-wire")),
+    (SC, "16-unknown-message-type", dict(
+        to=SC, input=sc_report(**dict(SCR, kind=61)), expect_error="no-kind")),
 ]
 
 

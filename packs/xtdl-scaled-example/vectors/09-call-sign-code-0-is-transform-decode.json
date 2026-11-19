@@ -1,0 +1,7 @@
+{
+  "name": "call-sign-code-0-is-transform-decode",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b0001502b92006422c4042fa000080310a13000000000000",
+  "expect_error": "transform-decode"
+}

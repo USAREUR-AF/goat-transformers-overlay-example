@@ -1,0 +1,14 @@
+{
+  "name": "negative-zero-position-reads-absent",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b000800000008000000042fa000080310a13614c79820820",
+  "expect": "3c05bc56d462b000800000008000000042fa000080310a13614c79820820",
+  "model": {
+    "@absent": [
+      "lat",
+      "lon"
+    ],
+    "callsign": "XT19"
+  }
+}

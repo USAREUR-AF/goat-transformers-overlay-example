@@ -1,0 +1,28 @@
+# xtdl-scaled-example: a FICTIONAL binary format, invented only for this
+# example. It shows the value transforms of engine-spec 0.15 on the `bits`
+# wire: a time in microseconds read as whole milliseconds (uiscale), a position
+# and an offset in sign and magnitude (smscale, smag), a speed as a scaled
+# single-precision float (f32scale), a code in octal digits (octal) and a call
+# sign in six-bit characters (chars:icao6). Layout: pack.md.
+format        xtdl-scaled-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+word_bytes    1
+bit_order     msb
+
+kind     report
+when     0:0:8      60
+requires lat lon
+field    time_ms             0:8:56     uiscale:1/1000
+# Sign 1 with magnitude 0, a negative zero, is the code for "no position".
+field    lat                 0:64:32    smscale:1/10000000  absent 2147483648
+field    lon                 0:96:32    smscale:1/10000000  absent 2147483648
+field    speed_ms            0:128:32   f32scale:1/10
+field    xtdl.lane_offset_m  0:160:12   smag
+field    xtdl.unit_code      0:172:12   octal
+field    xtdl.sector         0:184:8    uint
+# Eight spaces (code 32 eight times) is the code for "no call sign".
+field    callsign            0:192:48   chars:icao6  absent 142971416741920

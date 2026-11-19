@@ -1,0 +1,10 @@
+{
+  "name": "speed-keeps-its-single-precision-bits",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b0001502b92006422c4042f6cccd80310a13614c79820820",
+  "expect": "3c05bc56d462b0001502b92006422c4042f6cccd80310a13614c79820820",
+  "model": {
+    "speed_ms": "12.34000015258789"
+  }
+}

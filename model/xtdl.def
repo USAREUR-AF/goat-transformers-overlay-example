@@ -19,3 +19,5 @@ derive  xtdl.day_s  day_seconds  time_ms
 key   position_sent  int  -  "fictional: 1 when the report carries a position (xtdl-flag-example)"
 # engine-spec 0.12: `present` sets the flag to 1 whenever the entity holds a latitude.
 derive  xtdl.position_sent  present  lat
+key   lane_offset_m  int     m  "fictional: signed distance of the reporter from the centre of its lane, whole metres (xtdl-scaled-example)"
+key   unit_code      string  -  "fictional: the reporter's unit code, four octal digits (xtdl-scaled-example)"

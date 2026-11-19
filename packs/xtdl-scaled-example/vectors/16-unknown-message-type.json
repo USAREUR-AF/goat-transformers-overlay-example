@@ -1,0 +1,7 @@
+{
+  "name": "unknown-message-type",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3d05bc56d462b0001502b92006422c4042fa000080310a13614c79820820",
+  "expect_error": "no-kind"
+}

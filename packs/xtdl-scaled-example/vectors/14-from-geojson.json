@@ -1,0 +1,7 @@
+{
+  "name": "from-geojson",
+  "from": "geojson",
+  "to": "xtdl-scaled-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"time_ms\":1614456000000}}",
+  "expect": "3c05bc56d462b0001502b92006422c400000000000000000820820820820"
+}

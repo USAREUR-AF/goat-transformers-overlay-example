@@ -1,0 +1,13 @@
+{
+  "name": "southern-western-and-largest-values",
+  "from": "xtdl-scaled-example",
+  "to": "xtdl-scaled-example",
+  "input": "3c05bc56d462b0009502b92086422c4042fa0000ffffff13614c79820820",
+  "expect": "3c05bc56d462b0009502b92086422c4042fa0000ffffff13614c79820820",
+  "model": {
+    "lat": "-35.25",
+    "lon": "-10.5",
+    "xtdl.lane_offset_m": "-2047",
+    "xtdl.unit_code": "7777"
+  }
+}
