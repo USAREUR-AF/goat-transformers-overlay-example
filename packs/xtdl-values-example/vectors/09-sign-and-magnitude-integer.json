@@ -1,0 +1,10 @@
+{
+  "name": "sign-and-magnitude-integer",
+  "from": "xtdl-values-example",
+  "to": "xtdl-values-example",
+  "input": "29ca35c988840164016f15b518ac0018531e6082082042fa0000ff",
+  "expect": "29ca35c988840164016f15b518ac0018531e6082082042fa0000ff",
+  "model": {
+    "xtdl.lane_offset_m": "-127"
+  }
+}

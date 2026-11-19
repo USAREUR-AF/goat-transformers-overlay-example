@@ -32,10 +32,18 @@ tree="$work/assembled"
 "$OVERLAY/assemble.sh" ${ASSEMBLE_ARGS[@]+"${ASSEMBLE_ARGS[@]}"} "$tree"
 
 cd "$tree/engines/rust"
+# The test binaries record the tree's path when they are built, so a target
+# directory shared with an earlier run would test that run's (deleted) tree.
+export CARGO_TARGET_DIR="$work/target"
 overlay_vectors="$(ls "$OVERLAY"/packs/*/vectors/*.json | wc -l | tr -d ' ')"
 echo "check: running the Rust engine's tests on the assembled tree ($overlay_vectors overlay vectors with the library's)"
-cargo test --release 2>&1 | tee "$work/test.log" | grep -E '^(test |test result:|error)' || true
-[ "${PIPESTATUS[0]}" -eq 0 ] || { cat "$work/test.log"; fail "cargo test failed on the assembled tree"; }
+# Keep cargo's own exit status: a `|| true` after a pipeline would reset PIPESTATUS.
+set +e
+cargo test --release > "$work/test.log" 2>&1
+test_status=$?
+set -e
+grep -E '^(test |test result:|error)' "$work/test.log" || true
+[ "$test_status" -eq 0 ] || { cat "$work/test.log"; fail "cargo test failed on the assembled tree"; }
 
 formats="$(cargo run --release -q -- list-formats)"
 for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example xtdl-values-example; do

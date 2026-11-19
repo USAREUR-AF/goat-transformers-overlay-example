@@ -72,7 +72,7 @@ Six invented formats and one invented model module. They are marked
 
 | File | What it is | What it shows |
 |---|---|---|
-| `model/xtdl.def` | module `xtdl`: four keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms`; a `present` derive that sets `xtdl.position_sent` (engine-spec 0.12) |
+| `model/xtdl.def` | module `xtdl`: five keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms`; a `present` derive that sets `xtdl.position_sent` (engine-spec 0.12); `xtdl.lane_offset_m` for the `smag` field of xtdl-values-example |
 | `packs/xtdl-example/` | binary, two message layouts | message kinds chosen by a number on the wire (`kind`, `when`, `requires`); a value table (`map`, `via`); a `default`; a `const`; a counted list (`group ... count`) |
 | `packs/xtdl-b-example/` | binary, other byte order, other status numbers, other time step | the same keys in a different layout; a second value table for the same key |
 | `packs/xtdl-json-example/` | JSON | the same list as a JSON array (`group`); the full time in `time_ms` |
@@ -81,7 +81,7 @@ Six invented formats and one invented model module. They are marked
 | `packs/xtdl-flag-example/` | JSON | a flag set from whether a value is sent (`derive ... present`, engine-spec 0.12), with a `default` for "not sent" |
 | `packs/xtdl-set-example/` | TLV | a keyed set of tag, length and value items with a nested set, residue and a 16-bit checksum item (the `tlv` wire, engine-spec 0.13) |
 | `packs/xtdl-armor-example/` | six-bit armored text | a `bits` message read and written as printable text, six bits a character (`armor sixbit`), a call sign in six-bit characters (`sixbit`), an optional last field (engine-spec 0.14) |
-| `packs/xtdl-values-example/` | binary | the value transforms (engine-spec 0.15): octal digits, sign and magnitude, an integer scale (seconds to `time_ms`), a 6-bit character set and a scaled IEEE float |
+| `packs/xtdl-values-example/` | binary | the value transforms (engine-spec 0.15): octal digits, sign and magnitude (with an `absent` code, and plain `smag`), an integer scale that rounds (microseconds to `time_ms`), a 6-bit character set and a scaled IEEE float; GeoJSON both ways |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.

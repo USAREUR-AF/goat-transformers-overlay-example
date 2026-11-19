@@ -1,0 +1,13 @@
+{
+  "name": "no-latitude-code-reads-absent",
+  "from": "xtdl-values-example",
+  "to": "xtdl-values-example",
+  "input": "29cb000000840164016f15b518ac0018531e6082082042fa000083",
+  "expect": "29cb000000840164016f15b518ac0018531e6082082042fa000083",
+  "model": {
+    "@absent": [
+      "lat"
+    ],
+    "lon": "-10.5"
+  }
+}

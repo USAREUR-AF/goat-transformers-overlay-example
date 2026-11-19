@@ -1,0 +1,7 @@
+{
+  "name": "speed-nan-is-transform-decode",
+  "from": "xtdl-values-example",
+  "to": "xtdl-values-example",
+  "input": "29ca35c988840164016f15b518ac0018531e608208207fc0000083",
+  "expect_error": "transform-decode"
+}

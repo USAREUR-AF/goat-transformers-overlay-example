@@ -2,8 +2,8 @@
   "name": "leading-zero-octal-digits",
   "from": "xtdl-values-example",
   "to": "xtdl-values-example",
-  "input": "001e35c988840164180ea93018531e6082082042fa0000",
-  "expect": "001e35c988840164180ea93018531e6082082042fa0000",
+  "input": "001e35c988840164016f15b518ac0018531e6082082042fa000083",
+  "expect": "001e35c988840164016f15b518ac0018531e6082082042fa000083",
   "model": {
     "uid": "00017"
   }
