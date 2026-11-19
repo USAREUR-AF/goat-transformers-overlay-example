@@ -1,0 +1,15 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9V:5LV060QH65;LN@01u",
+  "expect": "9V:5LV060QH65;LN@01u",
+  "model": {
+    "@kind": "position",
+    "xtdl.sector": "19",
+    "lat": "35.25",
+    "lon": "10.5",
+    "callsign": "XT-19",
+    "speed_ms": "12.5"
+  }
+}

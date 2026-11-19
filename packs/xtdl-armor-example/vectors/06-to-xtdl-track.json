@@ -1,0 +1,7 @@
+{
+  "name": "to-xtdl-track",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-track-example",
+  "input": "9V:5LV060QH65;LN@01u",
+  "expect": "20b90215402c42067d0013"
+}

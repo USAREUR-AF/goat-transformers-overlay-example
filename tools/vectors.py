@@ -18,6 +18,7 @@ X, B, J = "xtdl-example", "xtdl-b-example", "xtdl-json-example"
 T, TX = "xtdl-track-example", "xtdl-text-example"
 F = "xtdl-flag-example"
 S = "xtdl-set-example"
+A = "xtdl-armor-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -139,6 +140,41 @@ def s_set(time_ms=None, callsign=None, lat=None, lon=None, sector=None, speed_ms
     return (head + be(total, 2)).hex()
 
 
+A_NO_LAT = 91 * 600000    # xtdl-armor-example: the code for "no latitude"
+A_NO_LON = 181 * 600000   # xtdl-armor-example: the code for "no longitude"
+
+
+def armor(bits):
+    """A string of '0'/'1' as six-bit armored text, zero-filled to a multiple of 6."""
+    bits += "0" * (-len(bits) % 6)
+    out = ""
+    for i in range(0, len(bits), 6):
+        v = int(bits[i:i + 6], 2)
+        out += chr(0x30 + v if v < 40 else 0x38 + v)
+    return out
+
+
+def ubits(value, width):
+    return format(value & ((1 << width) - 1), "0%db" % width)
+
+
+def sixbit_text(text, chars):
+    """Text as six-bit character codes: '@'..'_' are 0..31, ' '..'?' are 32..63; '@' pads."""
+    text = text.ljust(chars, "@")
+    return "".join(ubits(ord(c) - 0x40 if ord(c) >= 0x40 else ord(c), 6) for c in text)
+
+
+def a_position(sector, lat, lon, callsign, speed_ms=None, fill="", kind=9):
+    """xtdl-armor-example; `fill` replaces the trailing zero fill bits of the last character."""
+    raw_lat = A_NO_LAT if lat is None else round(lat * 600000)
+    raw_lon = A_NO_LON if lon is None else round(lon * 600000)
+    bits = (ubits(kind, 6) + ubits(sector, 5) + ubits(raw_lat, 28) + ubits(raw_lon, 29)
+            + sixbit_text(callsign, 7))
+    if speed_ms is not None:
+        bits += ubits(round(speed_ms * 10), 10)
+    return armor(bits + fill)
+
+
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
     return json.dumps(members, separators=(",", ":"))
@@ -152,6 +188,7 @@ def j_contacts(contacts):
 P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20:00:00 UTC
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
+AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
 
 VECTORS = [
@@ -277,6 +314,33 @@ VECTORS = [
     (S, "07-empty-nested-set-not-written", dict(
         from_=T, to=S, input=t_track(35.25, 10.5, None, None),
         expect=s_set(lat=35.25, lon=10.5))),
+    (A, "01-roundtrip", dict(
+        to=A, input=a_position(**AR), expect=a_position(**AR),
+        model={"@kind": "position", "xtdl.sector": "19", "lat": "35.25", "lon": "10.5",
+               "callsign": "XT-19", "speed_ms": "12.5"})),
+    (A, "02-no-speed-is-19-characters", dict(
+        to=A, input=a_position(**dict(AR, speed_ms=None)), expect=a_position(**dict(AR, speed_ms=None)),
+        model={"@absent": ["speed_ms"]})),
+    (A, "03-fill-bits-ignored", dict(
+        # 114 bits: four fill bits in the last character, set here, written back as zero
+        to=A, input=a_position(**dict(AR, speed_ms=None), fill="1111"),
+        expect=a_position(**dict(AR, speed_ms=None)))),
+    (A, "04-no-position-codes-read-absent", dict(
+        to=A, input=a_position(**dict(AR, lat=None, lon=None)),
+        expect=a_position(**dict(AR, lat=None, lon=None)),
+        model={"@absent": ["lat", "lon"], "callsign": "XT-19"})),
+    (A, "05-southern-western", dict(
+        to=A, input=a_position(**dict(AR, lat=-35.25, lon=-10.5)),
+        expect=a_position(**dict(AR, lat=-35.25, lon=-10.5)),
+        model={"lat": "-35.25", "lon": "-10.5"})),
+    (A, "06-to-xtdl-track", dict(
+        to=T, input=a_position(**AR), expect=t_track(35.25, 10.5, 12.5, 19))),
+    (A, "07-character-outside-the-armor", dict(
+        to=A, input=a_position(**AR)[:-1] + "X", expect_error="malformed-wire")),
+    (A, "08-too-short", dict(
+        to=A, input=a_position(**AR)[:10], expect_error="malformed-wire")),
+    (A, "09-unknown-message-type", dict(
+        to=A, input=a_position(**dict(AR, kind=8)), expect_error="no-kind")),
 ]
 
 

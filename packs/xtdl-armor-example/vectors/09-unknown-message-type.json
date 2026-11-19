@@ -1,0 +1,7 @@
+{
+  "name": "unknown-message-type",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "8V:5LV060QH65;LN@01u",
+  "expect_error": "no-kind"
+}

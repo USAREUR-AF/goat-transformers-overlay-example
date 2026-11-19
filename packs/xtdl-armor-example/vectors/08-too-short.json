@@ -1,0 +1,7 @@
+{
+  "name": "too-short",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9V:5LV060Q",
+  "expect_error": "malformed-wire"
+}

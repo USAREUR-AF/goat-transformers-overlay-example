@@ -1,0 +1,12 @@
+{
+  "name": "no-speed-is-19-characters",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9V:5LV060QH65;LN@00",
+  "expect": "9V:5LV060QH65;LN@00",
+  "model": {
+    "@absent": [
+      "speed_ms"
+    ]
+  }
+}

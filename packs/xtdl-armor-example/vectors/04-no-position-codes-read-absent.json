@@ -1,0 +1,14 @@
+{
+  "name": "no-position-codes-read-absent",
+  "from": "xtdl-armor-example",
+  "to": "xtdl-armor-example",
+  "input": "9VJ2@`1WTJh65;LN@01u",
+  "expect": "9VJ2@`1WTJh65;LN@01u",
+  "model": {
+    "@absent": [
+      "lat",
+      "lon"
+    ],
+    "callsign": "XT-19"
+  }
+}

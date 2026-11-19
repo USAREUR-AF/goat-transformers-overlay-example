@@ -1,0 +1,20 @@
+# xtdl-armor-example: a FICTIONAL format, invented only for this example: a
+# `bits` message carried as six-bit armored text (engine-spec 0.14), each
+# character six bits, with a call sign in six-bit characters. Layout: pack.md.
+format        xtdl-armor-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+word_bytes    1
+bit_order     msb
+armor         sixbit
+
+kind     position
+when     0:0:6      9
+field    xtdl.sector  0:6:5     uint
+field    lat          0:11:28   sscale:1/600000  absent 54600000
+field    lon          0:39:29   sscale:1/600000  absent 108600000
+field    callsign     0:68:42   sixbit           trim
+field    speed_ms     0:110:10  uscale:1/10      optional
