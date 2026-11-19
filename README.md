@@ -71,7 +71,7 @@ Five invented formats and one invented model module. They are marked
 | `packs/xtdl-example/` | binary, two message layouts | message kinds chosen by a number on the wire (`kind`, `when`, `requires`); a value table (`map`, `via`); a `default`; a `const`; a counted list (`group ... count`) |
 | `packs/xtdl-b-example/` | binary, other byte order, other status numbers, other time step | the same keys in a different layout; a second value table for the same key |
 | `packs/xtdl-json-example/` | JSON | the same list as a JSON array (`group`); the full time in `time_ms` |
-| `packs/xtdl-track-example/` | binary | no-value codes on the wire (`absent`, engine-spec 0.9): a field holding its code leaves the key absent, and a key the entity lacks is written as the code |
+| `packs/xtdl-track-example/` | binary | no-value codes on the wire (`absent`, engine-spec 0.9): a field holding its code leaves the key absent, and a key the entity lacks is written as the code; a scaled field rounds half away from zero and refuses a value that does not fit (engine-spec 0.11) |
 | `packs/xtdl-text-example/` | text line with `$` and a checksum | the `text` wire (engine-spec 0.10): comma-separated fields, degrees and minutes (`dm`), a time of day (`hms`), an NMEA-style checksum |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte

@@ -175,6 +175,18 @@ VECTORS = [
         expect=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
                   "properties": {}}),
         model={"lat": "35.25", "@absent": ["speed_ms", "xtdl.sector"]})),
+    (T, "05-half-step-rounds-away-from-zero", dict(
+        from_="geojson", to=T,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"speed_ms": 0.25}}),
+        # 0.25 m/s is 2.5 steps of 0.1 m/s: engine-spec 0.11 ruling 4a rounds half away from zero, to 3
+        expect=(le(deg7(35.25), 4) + le(deg7(10.5), 4) + le(3, 2) + bytes([NO_SECTOR])).hex())),
+    (T, "06-speed-too-large", dict(
+        from_="geojson", to=T,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"speed_ms": 6553.6}}),
+        # 65536 steps do not fit 16 bits: engine-spec 0.11 ruling 4b
+        expect_error="transform-encode")),
     (TX, "01-roundtrip", dict(
         to=TX, input=tx_position(**P), expect=tx_position(**P),
         model={"@kind": "position", "xtdl.sector": "19", "lat": "35.25", "lon": "10.5",

@@ -1,0 +1,7 @@
+{
+  "name": "half-step-rounds-away-from-zero",
+  "from": "geojson",
+  "to": "xtdl-track-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"speed_ms\":0.25}}",
+  "expect": "20b90215402c42060300ff"
+}
