@@ -74,6 +74,7 @@ Six invented formats and one invented model module. They are marked
 | `packs/xtdl-track-example/` | binary | no-value codes on the wire (`absent`, engine-spec 0.9): a field holding its code leaves the key absent, and a key the entity lacks is written as the code; a scaled field rounds half away from zero and refuses a value that does not fit (engine-spec 0.11) |
 | `packs/xtdl-text-example/` | text line with `$` and a checksum | the `text` wire (engine-spec 0.10): comma-separated fields, degrees and minutes (`dm`), a time of day (`hms`), an NMEA-style checksum |
 | `packs/xtdl-flag-example/` | JSON | a flag set from whether a value is sent (`derive ... present`, engine-spec 0.12), with a `default` for "not sent" |
+| `packs/xtdl-set-example/` | TLV | a keyed set of tag, length and value items with a nested set, residue and a 16-bit checksum item (the `tlv` wire, engine-spec 0.13) |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -130,7 +131,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the six overlay formats among them
+# the formats the engine loaded, the seven overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -166,7 +167,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the six format names and the GeoJSON conversion
+8. In `check.sh`, replace the seven format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.
