@@ -15,6 +15,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 X, B, J = "xtdl-example", "xtdl-b-example", "xtdl-json-example"
+T, TX = "xtdl-track-example", "xtdl-text-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -58,6 +59,43 @@ def b_position(sector, day_s, lat, lon, status):
     packed = sector << 3 | B_STATUS[status] << 1
     # bytes 9-10: time of day in steps of 2 seconds
     return (be(deg7(lat), 4) + be(deg7(lon), 4) + bytes([packed]) + be(day_s // 2, 2)).hex()
+
+
+NO_POS = 0x80000000   # xtdl-track-example: the code for "no latitude" and "no longitude"
+NO_SPEED = 0xFFFF     # xtdl-track-example: the code for "no speed"
+NO_SECTOR = 0xFF      # xtdl-track-example: the code for "no sector"
+
+
+def t_track(lat=None, lon=None, speed_ms=None, sector=None):
+    """xtdl-track-example: an absent value is written as its no-value code."""
+    raw_lat = NO_POS if lat is None else deg7(lat) & 0xFFFFFFFF
+    raw_lon = NO_POS if lon is None else deg7(lon) & 0xFFFFFFFF
+    raw_speed = NO_SPEED if speed_ms is None else round(speed_ms * 10)
+    raw_sector = NO_SECTOR if sector is None else sector
+    return (le(raw_lat, 4) + le(raw_lon, 4) + le(raw_speed, 2) + bytes([raw_sector])).hex()
+
+
+def nmea_xor(body):
+    x = 0
+    for c in body.encode("ascii"):
+        x ^= c
+    return "%02X" % x
+
+
+def dm(value, deg_digits, pos, neg):
+    """Degrees as degrees and minutes with 4 decimals, then the hemisphere letter."""
+    m = round(abs(value) * 60 * 10_000)
+    d, rest = divmod(m, 60 * 10_000)
+    text = "%0*d%02d.%04d" % (deg_digits, d, rest // 10_000, rest % 10_000)
+    return text, (neg if value < 0 and m > 0 else pos)
+
+
+def tx_position(sector, day_s, lat, lon, status):
+    la, ns = dm(lat, 2, "N", "S")
+    lo, ew = dm(lon, 3, "E", "W")
+    h, rem = divmod(day_s, 3600)
+    body = "XTPOS,%02d,%s,%s,%s,%s,%02d%02d%02d,%s" % (sector, la, ns, lo, ew, h, rem // 60, rem % 60, status)
+    return "$" + body + "*" + nmea_xor(body)
 
 
 def j(members):
@@ -124,6 +162,33 @@ VECTORS = [
         input=j({"time": "2021-02-27T20:00:00.000Z", "sector": 19,
                  "position": {"lat": 35.25, "lon": 10.5}}),
         expect=x_position(**dict(P, status="unknown")))),
+    (T, "01-roundtrip", dict(
+        to=T, input=t_track(35.25, 10.5, 12.5, 19), expect=t_track(35.25, 10.5, 12.5, 19),
+        model={"lat": "35.25", "lon": "10.5", "speed_ms": "12.5", "xtdl.sector": "19"})),
+    (T, "02-no-position-reads-absent", dict(
+        to=T, input=t_track(None, None, 12.5, 19), expect=t_track(None, None, 12.5, 19),
+        model={"speed_ms": "12.5", "xtdl.sector": "19", "@absent": ["lat", "lon"]})),
+    (T, "03-from-xtdl-writes-no-speed", dict(
+        from_=X, to=T, input=x_position(**P), expect=t_track(35.25, 10.5, None, 19))),
+    (T, "04-no-speed-to-geojson", dict(
+        to="geojson", input=t_track(35.25, 10.5, None, None),
+        expect=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                  "properties": {}}),
+        model={"lat": "35.25", "@absent": ["speed_ms", "xtdl.sector"]})),
+    (TX, "01-roundtrip", dict(
+        to=TX, input=tx_position(**P), expect=tx_position(**P),
+        model={"@kind": "position", "xtdl.sector": "19", "lat": "35.25", "lon": "10.5",
+               "xtdl.day_s": "72000", "xtdl.status": "active"})),
+    (TX, "02-to-xtdl", dict(
+        to=X, input=tx_position(**P), expect=x_position(**P))),
+    (TX, "03-from-xtdl", dict(
+        from_=X, to=TX, input=x_position(**P), expect=tx_position(**P))),
+    (TX, "04-southern-western", dict(
+        to=TX, input=tx_position(19, 72000, -35.25, -10.5, "idle"),
+        expect=tx_position(19, 72000, -35.25, -10.5, "idle"),
+        model={"lat": "-35.25", "lon": "-10.5"})),
+    (TX, "05-bad-checksum", dict(
+        to=TX, input=tx_position(**P)[:-2] + "00", expect_error="malformed-wire")),
 ]
 
 
@@ -131,7 +196,8 @@ def main():
     check = "--check" in sys.argv[1:]
     stale = 0
     for pack, name, body in VECTORS:
-        vector = {"name": name.split("-", 1)[1], "from": pack}
+        body = dict(body)
+        vector = {"name": name.split("-", 1)[1], "from": body.pop("from_", pack)}
         vector.update(body)
         text = json.dumps(vector, indent=2) + "\n"
         path = os.path.join(ROOT, "packs", pack, "vectors", name + ".json")

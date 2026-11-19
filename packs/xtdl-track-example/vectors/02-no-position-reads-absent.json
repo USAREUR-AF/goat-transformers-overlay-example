@@ -1,0 +1,15 @@
+{
+  "name": "no-position-reads-absent",
+  "from": "xtdl-track-example",
+  "to": "xtdl-track-example",
+  "input": "00000080000000807d0013",
+  "expect": "00000080000000807d0013",
+  "model": {
+    "speed_ms": "12.5",
+    "xtdl.sector": "19",
+    "@absent": [
+      "lat",
+      "lon"
+    ]
+  }
+}

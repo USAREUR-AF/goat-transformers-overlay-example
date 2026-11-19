@@ -1,0 +1,13 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-track-example",
+  "to": "xtdl-track-example",
+  "input": "20b90215402c42067d0013",
+  "expect": "20b90215402c42067d0013",
+  "model": {
+    "lat": "35.25",
+    "lon": "10.5",
+    "speed_ms": "12.5",
+    "xtdl.sector": "19"
+  }
+}

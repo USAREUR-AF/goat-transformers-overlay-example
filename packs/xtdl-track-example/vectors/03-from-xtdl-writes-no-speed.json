@@ -1,0 +1,7 @@
+{
+  "name": "from-xtdl-writes-no-speed",
+  "from": "xtdl-example",
+  "to": "xtdl-track-example",
+  "input": "9940190120b90215402c420651",
+  "expect": "20b90215402c4206ffff13"
+}

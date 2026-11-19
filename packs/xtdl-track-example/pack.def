@@ -1,0 +1,18 @@
+# xtdl-track-example: a FICTIONAL binary format, invented only for this example.
+# It shows the `absent` field option (engine-spec 0.9): a wire value that means
+# "no value". Layout: pack.md.
+format        xtdl-track-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          bits
+word_bytes    1
+uses          xtdl
+
+# A position the reporter does not know is sent as 0x80000000 in both fields,
+# a speed it does not know as 0xFFFF, a sector as 0xFF. Decode leaves such a key
+# absent; encode writes the code when the entity has no value for the key.
+field  lat          0:0:32   sscale:1/10000000  absent 2147483648
+field  lon          4:0:32   sscale:1/10000000  absent 2147483648
+field  speed_ms     8:0:16   uscale:1/10        absent 65535
+field  xtdl.sector  10:0:8   uint               absent 255
