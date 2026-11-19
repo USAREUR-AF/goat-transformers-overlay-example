@@ -1,0 +1,10 @@
+{
+  "name": "sub-millisecond-rounds-down",
+  "from": "xtdl-values-example",
+  "to": "xtdl-values-example",
+  "input": "29ca35c988840164016f15b518ac7cd8531e6082082042fa000083",
+  "expect": "29ca35c988840164016f15b518ac0018531e6082082042fa000083",
+  "model": {
+    "time_ms": "1614456000000"
+  }
+}

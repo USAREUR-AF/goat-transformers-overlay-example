@@ -187,16 +187,24 @@ def icao6(text, chars):
     return "".join(ubits(ord(c) - 64 if "A" <= c <= "Z" else ord(c), 6) for c in text.ljust(chars))
 
 
-def v_report(uid, lat, lon, time_s, callsign, speed_ms, lat_bits=None):
-    """xtdl-values-example: 184 bits, most significant first, as hex."""
-    bits = (ubits(int(uid, 8), 15)
-            + (lat_bits if lat_bits is not None else smag(round(lat * 100000), 25))
-            + smag(round(lon * 100000), 26)
-            + ubits(time_s, 32)
+V_NO_LAT = 1 << 24   # xtdl-values-example: sign 1 with magnitude 0, the code for "no latitude"
+
+
+def v_report(uid, lat, lon, time_us, callsign, speed_ms, lane, lat_bits=None, lon_bits=None, speed_bits=None):
+    """xtdl-values-example: 216 bits, most significant first, as hex."""
+    if lat_bits is None:
+        lat_bits = ubits(V_NO_LAT, 25) if lat is None else smag(round(lat * 100000), 25)
+    if lon_bits is None:
+        lon_bits = smag(round(lon * 100000), 26)
+    if speed_bits is None:
+        speed_bits = ubits(struct.unpack(">I", struct.pack(">f", speed_ms * 10))[0], 32)
+    bits = (ubits(int(uid, 8), 15) + lat_bits + lon_bits
+            + ubits(time_us, 56)
             + icao6(callsign, 9)
-            + ubits(struct.unpack(">I", struct.pack(">f", speed_ms * 10))[0], 32))
-    assert len(bits) == 184
-    return int(bits, 2).to_bytes(23, "big").hex()
+            + speed_bits
+            + smag(lane, 8))
+    assert len(bits) == 216
+    return int(bits, 2).to_bytes(27, "big").hex()
 
 
 def j(members):
@@ -212,7 +220,7 @@ def j_contacts(contacts):
 P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20:00:00 UTC
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
-VR = dict(uid="12345", lat=35.25, lon=-10.5, time_s=1614456000, callsign="XT19", speed_ms=12.5)
+VR = dict(uid="12345", lat=35.25, lon=-10.5, time_us=1614456000000000, callsign="XT19", speed_ms=12.5, lane=-3)
 AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
 
@@ -369,20 +377,50 @@ VECTORS = [
     (V, "01-roundtrip", dict(
         to=V, input=v_report(**VR), expect=v_report(**VR),
         model={"uid": "12345", "lat": "35.25", "lon": "-10.5", "time_ms": "1614456000000",
-               "callsign": "XT19", "speed_ms": "12.5"})),
+               "callsign": "XT19", "speed_ms": "12.5", "xtdl.lane_offset_m": "-3"})),
     (V, "02-to-xtdl-track", dict(
         to=T, input=v_report(**VR), expect=t_track(35.25, -10.5, 12.5, None))),
     (V, "03-negative-zero-written-with-sign-0", dict(
-        # latitude: sign bit 1 with magnitude 0 reads as 0 and is written back with sign 0
-        to=V, input=v_report(**VR, lat_bits="1" + "0" * 24),
-        expect=v_report(**dict(VR, lat=0)),
-        model={"lat": "0"})),
-    (V, "04-leading-zero-octal-digits", dict(
+        # longitude: sign bit 1 with magnitude 0 reads as 0 and is written back with sign 0
+        to=V, input=v_report(**VR, lon_bits="1" + "0" * 25),
+        expect=v_report(**dict(VR, lon=0)),
+        model={"lon": "0"})),
+    (V, "04-no-latitude-code-reads-absent", dict(
+        # latitude: sign 1 with magnitude 0 is this pack's `absent` code, not a value
+        to=V, input=v_report(**dict(VR, lat=None)), expect=v_report(**dict(VR, lat=None)),
+        model={"@absent": ["lat"], "lon": "-10.5"})),
+    (V, "05-leading-zero-octal-digits", dict(
         to=V, input=v_report(**dict(VR, uid="00017")), expect=v_report(**dict(VR, uid="00017")),
         model={"uid": "00017"})),
-    (V, "05-character-outside-the-set", dict(
-        # code 0 is not a character of the 6-bit set
-        to=V, input=v_report(**VR)[:26] + "00" + v_report(**VR)[28:], expect_error="transform-decode")),
+    (V, "06-character-outside-the-set", dict(
+        # byte 16 holds the call sign's second character: code 0 is not a character of the 6-bit set
+        to=V, input=v_report(**VR)[:32] + "00" + v_report(**VR)[34:], expect_error="transform-decode")),
+    (V, "07-half-millisecond-rounds-away-from-zero", dict(
+        # 500 microseconds is half a millisecond: engine-spec 0.15 rounds half away from zero
+        to=V, input=v_report(**dict(VR, time_us=1614456000000500)),
+        expect=v_report(**dict(VR, time_us=1614456000001000)),
+        model={"time_ms": "1614456000001"})),
+    (V, "08-sub-millisecond-rounds-down", dict(
+        to=V, input=v_report(**dict(VR, time_us=1614456000000499)),
+        expect=v_report(**VR),
+        model={"time_ms": "1614456000000"})),
+    (V, "09-sign-and-magnitude-integer", dict(
+        # smag: the sign bit, then seven bits of magnitude; -127 is the most negative value
+        to=V, input=v_report(**dict(VR, lane=-127)), expect=v_report(**dict(VR, lane=-127)),
+        model={"xtdl.lane_offset_m": "-127"})),
+    (V, "10-speed-nan-is-transform-decode", dict(
+        to=V, input=v_report(**VR, speed_bits=ubits(0x7FC00000, 32)), expect_error="transform-decode")),
+    (V, "11-to-geojson", dict(
+        to="geojson", input=v_report(**VR),
+        expect=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [-10.5, 35.25]},
+                  "properties": {"time_ms": 1614456000000, "callsign": "XT19", "speed_ms": 12.5},
+                  "id": "12345"}))),
+    (V, "12-from-geojson", dict(
+        # no id: uid writes zero bits, read back as 00000; no lane offset: zero bits
+        from_="geojson", to=V,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [-10.5, 35.25]},
+                 "properties": {"time_ms": 1614456000000, "callsign": "XT19", "speed_ms": 12.5}}),
+        expect=v_report(**dict(VR, uid="00000", lane=0)))),
 ]
 
 

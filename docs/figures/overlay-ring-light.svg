@@ -58,7 +58,7 @@
 <text x="762" y="339" class="t quiet" font-size="13" text-anchor="middle">binary · 6 vectors</text>
 <rect x="674" y="362" width="176" height="52" rx="8" class="obox"/>
 <text x="762" y="384" class="t ink" font-size="14" text-anchor="middle">xtdl-values-example</text>
-<text x="762" y="403" class="t quiet" font-size="13" text-anchor="middle">binary · 5 vectors</text>
+<text x="762" y="403" class="t quiet" font-size="13" text-anchor="middle">binary · 12 vectors</text>
 <rect x="298" y="192" width="284" height="200" rx="12" class="hub"/>
 <text x="440" y="224" class="t ink" font-size="19" text-anchor="middle" font-weight="600">shared model</text>
 <text x="440" y="250" class="t quiet" font-size="13" text-anchor="middle" font-weight="600">public keys the overlay maps</text>
@@ -67,7 +67,7 @@
 <text x="440" y="288" class="m quiet" font-size="13" text-anchor="middle">time_ms uid</text>
 <text x="440" y="340" class="m ovl" font-size="13" text-anchor="middle">sector status day_s contacts</text>
 <text x="440" y="358" class="m ovl" font-size="13" text-anchor="middle">contact_id bearing_deg range_m</text>
-<text x="440" y="376" class="m ovl" font-size="13" text-anchor="middle">position_sent</text>
+<text x="440" y="376" class="m ovl" font-size="13" text-anchor="middle">position_sent lane_offset_m</text>
 <text x="440" y="428" class="t ink" font-size="14" text-anchor="middle">Overlay packs map a public key wherever one fits,</text>
 <text x="440" y="448" class="t ink" font-size="14" text-anchor="middle">so they convert to and from the public formats.</text>
 <text x="440" y="484" class="t quiet" font-size="14" text-anchor="middle">The engines are not copied or changed.</text>
