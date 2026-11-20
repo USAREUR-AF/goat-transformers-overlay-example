@@ -1,0 +1,7 @@
+{
+  "name": "from-geojson-derives-ecef",
+  "from": "geojson",
+  "to": "xtdl-frame-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0,0]},\"properties\":{\"time_ms\":1614456000500}}",
+  "expect": "{\"t_s\":1614456000,\"t_ns\":500000000,\"x\":6378137,\"y\":0,\"z\":0}"
+}

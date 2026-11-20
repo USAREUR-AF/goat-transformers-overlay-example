@@ -1,0 +1,17 @@
+# xtdl-frame-example: a FICTIONAL format, invented only for this example, on the
+# `json` wire. It holds a time as seconds and nanoseconds and a position as
+# earth-centered, earth-fixed coordinates; the derive lines of model/xtdl.def
+# (engine-spec 0.16) turn them into time_ms, lat, lon and hae and back. Layout: pack.md.
+format        xtdl-frame-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          json
+uses          xtdl
+
+field    xtdl.t_s       t_s      int
+field    xtdl.t_ns      t_ns     int
+field    xtdl.ecef_x_m  x        float
+field    xtdl.ecef_y_m  y        float
+field    xtdl.ecef_z_m  z        float
+field    xtdl.geoid_m   geoid_m  float

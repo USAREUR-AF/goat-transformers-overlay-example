@@ -1,0 +1,13 @@
+{
+  "name": "to-xtdl-track",
+  "from": "xtdl-frame-example",
+  "to": "xtdl-track-example",
+  "input": "{\"t_s\":1614456000,\"t_ns\":500000000,\"x\":6378137,\"y\":0,\"z\":0}",
+  "expect": "0000000000000000ffffff",
+  "model": {
+    "@complete": true,
+    "lat": "0",
+    "lon": "0",
+    "hae": "0"
+  }
+}

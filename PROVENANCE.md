@@ -18,6 +18,6 @@ source material. Name the controlling office.]
 
 ## This example
 
-Everything here is fictional. The module `model/xtdl.def` and the nine formats
+Everything here is fictional. The module `model/xtdl.def` and the ten formats
 under `packs/` were invented for this example; their layouts encode nothing
 real. They exist to show the overlay shape.

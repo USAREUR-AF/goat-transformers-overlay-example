@@ -1,0 +1,7 @@
+{
+  "name": "time-before-1970",
+  "from": "geojson",
+  "to": "xtdl-frame-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0,0]},\"properties\":{\"time_ms\":-1}}",
+  "expect": "{\"t_s\":-1,\"t_ns\":999000000,\"x\":6378137,\"y\":0,\"z\":0}"
+}
