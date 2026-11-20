@@ -1,0 +1,14 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-report-example",
+  "to": "xtdl-report-example",
+  "input": "<report id=\"XT-19\" time=\"2021-02-27T20:00:00Z\"><pos lat=\"35.25\" lon=\"10.5\"/><class confidence=\"0.75\">vehicle</class><flags>positioned degraded</flags><detail/></report>",
+  "expect": "<report id=\"XT-19\" time=\"2021-02-27T20:00:00Z\"><pos lat=\"35.25\" lon=\"10.5\"/><class confidence=\"0.75\">vehicle</class><flags>positioned degraded</flags><detail/></report>",
+  "model": {
+    "@complete": true,
+    "time_ms": "1614456000000",
+    "xtdl.class": "vehicle",
+    "xtdl.confidence": "0.75",
+    "xtdl.degraded": "1"
+  }
+}

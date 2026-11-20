@@ -1,0 +1,13 @@
+{
+  "name": "confidence-without-class-is-not-written",
+  "from": "xtdl-report-example",
+  "to": "xtdl-report-example",
+  "input": "<report id=\"XT-19\"><class confidence=\"0.75\"/><detail/></report>",
+  "expect": "<report id=\"XT-19\"><detail/></report>",
+  "model": {
+    "xtdl.confidence": "0.75",
+    "@absent": [
+      "xtdl.class"
+    ]
+  }
+}
