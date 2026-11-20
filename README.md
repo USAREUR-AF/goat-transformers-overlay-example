@@ -50,9 +50,10 @@ into the library.
 | `packs/<format>/pack.def` | one format: its wire, its fields and rules, marked `distribution controlled`, with a `source` line |
 | `packs/<format>/pack.md` | the layout in words |
 | `packs/<format>/vectors/` | conformance vectors: an input message and the exact expected output |
-| `tools/vectors.py` | computes the expected bytes of the vectors without an engine |
+| `tool-vectors/` | runs of the engine's command-line tool (engine-spec 0.23) on the overlay's formats: arguments, exit status and the exact output |
+| `tools/vectors.py` | computes the expected bytes of the vectors, and the expected output of the tool vectors, without an engine |
 | `assemble.sh` | builds the assembled tree; refuses to replace a library file |
-| `check.sh` | assembles, runs the Rust engine's tests, and shows that a public-only engine refuses the overlay |
+| `check.sh` | assembles, runs the Rust engine's tests and the tool vectors, and shows that a public-only engine refuses the overlay |
 | `PROVENANCE.md` | the rights basis and handling of the packs (a template here) |
 
 The `distribution` line is what the engines enforce:
@@ -145,8 +146,12 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the sixteen overlay formats among them
+# the formats the engine loaded, the sixteen overlay formats among them:
+# format, version and wire, separated by tabs
 cargo run -q -- list-formats
+
+# what carries between two overlay formats, one line per ordered pair
+cargo run -q -- matrix --packs-only xtdl-example,xtdl-json-example
 
 # a contact message to JSON
 echo 3a100e00020c400fc8a078 | cargo run -q -- convert --from xtdl-example --to xtdl-json-example
@@ -182,7 +187,8 @@ library with the overlay.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
 8. In `check.sh`, replace the sixteen format names and the GeoJSON conversion
-   with your own formats. Run `./check.sh` until it ends with `check: ok`.
+   with your own formats, and write your own `tool-vectors/` (the format is in
+   the library's `spec/vector-format.md`, Tool vectors). Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.
 10. Never copy a pack, a module, a vector or an assembled tree from the overlay

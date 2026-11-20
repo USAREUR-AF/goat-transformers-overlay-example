@@ -752,9 +752,106 @@ VECTORS = [
 ]
 
 
+# Tool vectors (engine-spec 0.23, the command-line contract; vector-format.md,
+# Tool vectors). Each expected text follows from the contract and the pack
+# files alone, never from an engine's output: list-formats from the `format`,
+# `version` and `wire` lines; capability and matrix from ruling 6 of 0.11
+# (the mapped keys of each pack, in the order of first appearance).
+
+
+def pack_lines(pack):
+    with open(os.path.join(ROOT, "packs", pack, "pack.def"), encoding="utf-8") as f:
+        for line in f:
+            t = line.split("#")[0].split()
+            if t:
+                yield t
+
+
+def pack_header(pack):
+    head = {}
+    for t in pack_lines(pack):
+        if t[0] in ("format", "version", "wire") and t[0] not in head:
+            head[t[0]] = " ".join(t[1:]).strip('"')
+    return head
+
+
+def model_keys(pack):
+    """Ruling 6a and 6b: field and also lines map a key; a group adds <list>[]
+    and prefixes the keys inside it until its `end`."""
+    keys, prefix = [], []
+    def add(entry):
+        if entry not in keys:
+            keys.append(entry)
+    for t in pack_lines(pack):
+        if t[0] in ("field", "also"):
+            add("".join(prefix) + t[1])
+        elif t[0] == "group":
+            add("".join(prefix) + t[1] + "[]")
+            prefix.append(t[1] + "[].")
+        elif t[0] == "end" and prefix:
+            prefix.pop()
+    return keys
+
+
+def capability_line(a, b):
+    """Ruling 6d and 6e, as one matrix line of 0.23."""
+    ka, kb = model_keys(a), model_keys(b)
+    carried = [k for k in ka if k in kb]
+    dropped = [k for k in ka if k not in kb]
+    grade = "none" if not carried else ("full" if not dropped else "partial")
+    return "\t".join([pack_header(a)["format"], pack_header(b)["format"], grade,
+                      " ".join(carried), " ".join(dropped)]) + "\n"
+
+
+def tool_vectors():
+    two = sorted([X, J], key=lambda p: pack_header(p)["format"].encode())
+    listing = "".join("%s\t%s\t%s\n" % (h["format"], h["version"], h["wire"])
+                      for h in map(pack_header, two))
+    matrix = "from\tto\tgrade\tcarried\tdropped\n" + "".join(
+        capability_line(a, b) for a in two for b in two)
+    geojson = '{"type":"Feature","geometry":{"type":"Point","coordinates":[10.5,35.25]},"properties":{"time_ms":1614456000000}}'
+    # 1614456000000 ms is 20:00:00, day second 72000; sector 0 and status unknown
+    # are what xtdl-example writes for a GeoJSON point (README, What carries)
+    position = x_position(0, 72000, 35.25, 10.5, "unknown")
+    assert position == "0140190120b90215402c420653"   # the conversion check.sh shows
+    packs = ["--packs", "{packs}"]
+    return [
+        ("01-list-formats-two-overlay-formats", dict(
+            args=["list-formats", "--packs-only", "%s,%s" % (X, J)] + packs, exit=0, stdout_text=listing)),
+        ("02-matrix-two-overlay-formats", dict(
+            args=["matrix", "--packs-only", "%s,%s" % (X, J)] + packs, exit=0, stdout_text=matrix)),
+        ("03-capability-overlay-to-overlay", dict(
+            args=["capability", "--from", J, "--to", X, "--packs-only", "%s,%s" % (J, X)] + packs,
+            exit=0, stdout_text=capability_line(J, X))),
+        ("04-convert-public-to-overlay", dict(
+            args=["convert", "--from", "geojson", "--to", X, "--packs-only", "geojson," + X] + packs,
+            stdin_hex=geojson.encode().hex(), exit=0, stdout_text=position)),
+        ("05-public-only-engine-refuses-the-overlay", dict(
+            # engine-spec 0.4: a controlled module is refused by a public-only engine
+            args=["list-formats", "--packs-only", X, "--max-distribution", "public"] + packs,
+            exit=1, error_kind="distribution-refused")),
+        ("06-usage-error-before-loading", dict(
+            # a trailing comma leaves an empty name: usage error 10, exit 2
+            args=["matrix", "--packs-only", X + ","] + packs, exit=2)),
+    ]
+
+
 def main():
     check = "--check" in sys.argv[1:]
     stale = 0
+    tools = tool_vectors()
+    for name, body in tools:
+        text = json.dumps(dict(name=name, **body), indent=2) + "\n"
+        path = os.path.join(ROOT, "tool-vectors", name + ".json")
+        if check:
+            on_disk = open(path, encoding="utf-8").read() if os.path.exists(path) else None
+            if on_disk != text:
+                print("vectors: %s differs from tools/vectors.py" % os.path.relpath(path, ROOT))
+                stale += 1
+        else:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(text)
     for pack, name, body in VECTORS:
         body = dict(body)
         vector = {"name": name.split("-", 1)[1], "from": body.pop("from_", pack)}
@@ -771,7 +868,7 @@ def main():
                 f.write(text)
     if stale:
         return 1
-    print("vectors: %d %s" % (len(VECTORS), "match tools/vectors.py" if check else "written"))
+    print("vectors: %d and %d tool vectors %s" % (len(VECTORS), len(tools), "match tools/vectors.py" if check else "written"))
     return 0
 
 

@@ -11,6 +11,9 @@
 #   4. the engine lists the sixteen overlay formats
 #   5. a public format converts into an overlay format
 #   6. an engine limited to public content refuses the tree: distribution-refused
+#   7. the library's tool vectors (the command-line contract, engine-spec 0.23)
+#      pass on the assembled tree, but for the one that a controlled module
+#      must fail, and the overlay's own tool vectors (tool-vectors/) pass
 set -euo pipefail
 OVERLAY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 usage() { echo "usage: check.sh [--core-dir DIR]" >&2; exit 2; }
@@ -45,7 +48,8 @@ set -e
 grep -E '^(test |test result:|error)' "$work/test.log" || true
 [ "$test_status" -eq 0 ] || { cat "$work/test.log"; fail "cargo test failed on the assembled tree"; }
 
-formats="$(cargo run --release -q -- list-formats)"
+# list-formats writes format<TAB>version<TAB>wire (engine-spec 0.23)
+formats="$(cargo run --release -q -- list-formats | cut -f1)"
 for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example xtdl-values-example xtdl-frame-example xtdl-gated-example xtdl-report-example xtdl-asn1-example xtdl-switch-example xtdl-list-example xtdl-text-ends-example; do
   grep -qx "$f" <<<"$formats" || fail "the engine does not list $f"
 done
@@ -67,4 +71,18 @@ set -e
 grep -q 'distribution-refused' <<<"$refusal" || fail "expected distribution-refused, got: $refusal"
 echo "check: list-formats --max-distribution public is refused (exit $status):"
 echo "$refusal" | grep 'distribution-refused' | sed 's/^/  /'
+
+# The command-line contract. The library's vector 010 loads one public pack with
+# --max-distribution public; in an overlay tree the controlled module in model/
+# is refused first, which is step 6 again. Every other library vector must pass.
+tool="$CARGO_TARGET_DIR/release/goat-xf"
+cd "$tree"
+set +e
+library_tools="$(python3 -I tools/tool-vectors.py -- "$tool" 2>&1)"
+set -e
+unexpected="$(grep '^FAIL ' <<<"$library_tools" | grep -v '^FAIL 010-max-distribution-public-loads-a-public-pack.json: .*distribution-refused' || true)"
+[ -z "$unexpected" ] || { echo "$library_tools"; fail "library tool vectors failed: $unexpected"; }
+echo "check: library $(tail -n 1 <<<"$library_tools") (010 is refused: the overlay's module is controlled)"
+python3 -I tools/tool-vectors.py --vectors "$OVERLAY/tool-vectors" -- "$tool" \
+  || fail "the overlay's tool vectors failed"
 echo "check: ok"

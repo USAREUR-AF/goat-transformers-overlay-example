@@ -1,0 +1,16 @@
+{
+  "name": "03-capability-overlay-to-overlay",
+  "args": [
+    "capability",
+    "--from",
+    "xtdl-json-example",
+    "--to",
+    "xtdl-example",
+    "--packs-only",
+    "xtdl-json-example,xtdl-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 0,
+  "stdout_text": "xtdl-json-example\txtdl-example\tpartial\txtdl.sector xtdl.status lat lon xtdl.contacts[] xtdl.contacts[].xtdl.contact_id xtdl.contacts[].xtdl.bearing_deg xtdl.contacts[].xtdl.range_m\tuid time_ms\n"
+}
