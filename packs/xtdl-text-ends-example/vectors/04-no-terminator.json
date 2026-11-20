@@ -1,0 +1,7 @@
+{
+  "name": "no-terminator",
+  "from": "xtdl-text-ends-example",
+  "to": "xtdl-text-ends-example",
+  "input": "130123456789abcdef012345676a6565700000b1518b90",
+  "expect_error": "malformed-wire"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "full-class-cannot-be-written",
+  "from": "xtdl-text-ends-example",
+  "to": "xtdl-text-ends-example",
+  "input": "130123456789abcdef012345676a6565707331b1518b9fe0",
+  "expect_error": "transform-encode"
+}

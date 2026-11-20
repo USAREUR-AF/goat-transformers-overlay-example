@@ -1,0 +1,10 @@
+{
+  "name": "long-call-sign",
+  "from": "xtdl-text-ends-example",
+  "to": "xtdl-text-ends-example",
+  "input": "070123456789abcdef01234567626f61740000b1518b941066509105042a506b4f40c9930fe0",
+  "expect": "070123456789abcdef01234567626f61740000b1518b941066509105042a506b4f40c9930fe0",
+  "model": {
+    "callsign": "XT19 ALPHA BRAVO 220"
+  }
+}

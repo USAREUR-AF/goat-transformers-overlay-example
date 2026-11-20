@@ -1,0 +1,18 @@
+# xtdl-text-ends-example: a FICTIONAL format, invented only for this example: a
+# sequential `bits` report with the long and terminated fields of engine-spec
+# 0.22: a 96-bit tag kept as hex, a fixed text field that ends at a NUL, and a
+# 7-bit call sign of any length that ends at code 127. Layout: pack.md.
+format        xtdl-text-ends-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+layout        sequential
+bit_order     msb
+
+field  xtdl.sector    8               uint
+field  xtdl.auth_tag  96              hex
+field  xtdl.class     48              chars:ascii8  stop 0
+field  callsign       until:127       chars:ascii7
+align  8

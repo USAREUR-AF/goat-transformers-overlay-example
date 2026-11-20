@@ -88,6 +88,7 @@ Six invented formats and one invented model module. They are marked
 | `packs/xtdl-asn1-example/` | ASN.1 unaligned PER | a message defined in ASN.1 (engine-spec 0.19): constrained integers, an ENUMERATED, an OPTIONAL string, a CHOICE, a SEQUENCE OF and an extension marker, each taking the fewest bits its constraint allows |
 | `packs/xtdl-switch-example/` | binary, sequential | a later part laid out by a value read earlier (engine-spec 0.20 `switch`), with one case for two values and an `else` |
 | `packs/xtdl-list-example/` | binary, sequential | the list forms of engine-spec 0.21: a count read before other fields (`count` and `group ... count @`), a list closed by a last-item flag (`last`) and a list to the end of the message (`rest`) |
+| `packs/xtdl-text-ends-example/` | binary, sequential | long and terminated fields of engine-spec 0.22: a 96-bit tag kept as hex (`hex`), a fixed text field that ends at a NUL (`stop 0`), and a 7-bit call sign of any length ended by code 127 (`until:127`) |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -144,7 +145,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the fifteen overlay formats among them
+# the formats the engine loaded, the sixteen overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -180,7 +181,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the fifteen format names and the GeoJSON conversion
+8. In `check.sh`, replace the sixteen format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.
