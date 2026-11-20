@@ -1,0 +1,7 @@
+{
+  "name": "five-contacts-do-not-fit",
+  "from": "xtdl-example",
+  "to": "xtdl-asn1-example",
+  "input": "3a100e000500400f01400f02400f03400f04400f",
+  "expect_error": "transform-encode"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "choice-lane-offset-no-callsign",
+  "from": "xtdl-asn1-example",
+  "to": "xtdl-asn1-example",
+  "input": "0e8288bf81941e9702b000",
+  "expect": "0e8288bf81941e9702b000",
+  "model": {
+    "xtdl.lane_offset_m": "-3",
+    "xtdl.contacts.#": "0",
+    "@absent": [
+      "callsign",
+      "speed_ms"
+    ]
+  }
+}

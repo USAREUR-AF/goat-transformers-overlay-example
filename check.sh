@@ -8,7 +8,7 @@
 #   1. the vector files equal what tools/vectors.py computes
 #   2. assemble.sh builds a tree from the library and this overlay
 #   3. the Rust engine's tests pass on that tree (library and overlay vectors)
-#   4. the engine lists the twelve overlay formats
+#   4. the engine lists the thirteen overlay formats
 #   5. a public format converts into an overlay format
 #   6. an engine limited to public content refuses the tree: distribution-refused
 set -euo pipefail
@@ -46,10 +46,10 @@ grep -E '^(test |test result:|error)' "$work/test.log" || true
 [ "$test_status" -eq 0 ] || { cat "$work/test.log"; fail "cargo test failed on the assembled tree"; }
 
 formats="$(cargo run --release -q -- list-formats)"
-for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example xtdl-values-example xtdl-frame-example xtdl-gated-example xtdl-report-example; do
-  echo "$formats" | grep -qx "$f" || fail "the engine does not list $f"
+for f in xtdl-example xtdl-b-example xtdl-json-example xtdl-track-example xtdl-text-example xtdl-flag-example xtdl-set-example xtdl-armor-example xtdl-values-example xtdl-frame-example xtdl-gated-example xtdl-report-example xtdl-asn1-example; do
+  grep -qx "$f" <<<"$formats" || fail "the engine does not list $f"
 done
-echo "check: the engine lists the twelve overlay formats"
+echo "check: the engine lists the thirteen overlay formats"
 
 # A public format into an overlay format: position carries, the time of day is
 # derived from time_ms, and the status is the pack's default.
@@ -64,7 +64,7 @@ refusal="$(cargo run --release -q -- list-formats --max-distribution public 2>&1
 status=$?
 set -e
 [ "$status" -ne 0 ] || fail "an engine limited to public content loaded the overlay"
-echo "$refusal" | grep -q 'distribution-refused' || fail "expected distribution-refused, got: $refusal"
+grep -q 'distribution-refused' <<<"$refusal" || fail "expected distribution-refused, got: $refusal"
 echo "check: list-formats --max-distribution public is refused (exit $status):"
 echo "$refusal" | grep 'distribution-refused' | sed 's/^/  /'
 echo "check: ok"

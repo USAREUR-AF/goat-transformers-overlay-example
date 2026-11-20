@@ -1,0 +1,18 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-asn1-example",
+  "to": "xtdl-asn1-example",
+  "input": "672a9e8881c62ff901762a31721f5060007e4003c0",
+  "expect": "672a9e8881c62ff901762a31721f5060007e4003c0",
+  "model": {
+    "xtdl.sector": "19",
+    "lat": "35.25",
+    "lon": "10.5",
+    "xtdl.status": "active",
+    "callsign": "XT19",
+    "speed_ms": "12.5",
+    "xtdl.contacts.#": "2",
+    "xtdl.contacts[1].xtdl.contact_id": "200",
+    "xtdl.contacts[1].xtdl.range_m": "12000"
+  }
+}
