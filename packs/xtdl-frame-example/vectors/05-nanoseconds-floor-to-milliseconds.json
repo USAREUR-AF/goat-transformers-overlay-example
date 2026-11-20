@@ -1,0 +1,11 @@
+{
+  "name": "nanoseconds-floor-to-milliseconds",
+  "from": "xtdl-frame-example",
+  "to": "xtdl-frame-example",
+  "input": "{\"t_s\":1,\"t_ns\":1999999,\"x\":6378137,\"y\":0,\"z\":0}",
+  "expect": "{\"t_s\":1,\"t_ns\":1999999,\"x\":6378137,\"y\":0,\"z\":0}",
+  "model": {
+    "@complete": true,
+    "time_ms": "1001"
+  }
+}

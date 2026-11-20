@@ -2,3 +2,5 @@
 *-assembled
 .goat-transformers-assembled
 assembled/
+__pycache__/
+*.pyc

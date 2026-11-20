@@ -9,6 +9,7 @@ then checked against these files (./check.sh).
   python3 tools/vectors.py --check   exit 1 when a file on disk differs
 """
 import json
+import math
 import struct
 import os
 import sys
@@ -21,6 +22,7 @@ F = "xtdl-flag-example"
 S = "xtdl-set-example"
 A = "xtdl-armor-example"
 V = "xtdl-values-example"
+FR = "xtdl-frame-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -207,6 +209,56 @@ def v_report(uid, lat, lon, time_us, callsign, speed_ms, lane, lat_bits=None, lo
     return int(bits, 2).to_bytes(27, "big").hex()
 
 
+# WGS 84, as engine-spec 0.16 states it.
+WGS_A = 6378137.0
+WGS_F = 1 / 298.257223563
+WGS_E2 = WGS_F * (2 - WGS_F)
+WGS_B = WGS_A * (1 - WGS_F)
+
+
+def ecef_of(lat, lon, hae):
+    """Geodetic to earth-centered, earth-fixed meters."""
+    phi, lam = lat * (math.pi / 180), lon * (math.pi / 180)
+    n = WGS_A / math.sqrt(1 - WGS_E2 * math.sin(phi) ** 2)
+    return ((n + hae) * math.cos(phi) * math.cos(lam),
+            (n + hae) * math.cos(phi) * math.sin(lam),
+            (n * (1 - WGS_E2) + hae) * math.sin(phi))
+
+
+def geodetic_of(x, y, z):
+    """Heikkinen's closed form, in the order engine-spec 0.16 gives it."""
+    a, b, e2 = WGS_A, WGS_B, WGS_E2
+    p = math.sqrt(x * x + y * y)
+    F = 54 * b * b * z * z
+    G = p * p + (1 - e2) * z * z - e2 * (a * a - b * b)
+    c = e2 * e2 * F * p * p / (G ** 3)
+    s_ = math.cbrt(1 + c + math.sqrt(c * c + 2 * c))
+    k = s_ + 1 + 1 / s_
+    P = F / (3 * k * k * G * G)
+    Q = math.sqrt(1 + 2 * e2 * e2 * P)
+    r0 = -P * e2 * p / (1 + Q) + math.sqrt(max(0.0, a * a / 2 * (1 + 1 / Q) - P * (1 - e2) * z * z / (Q * (1 + Q)) - P * p * p / 2))
+    U = math.sqrt((p - e2 * r0) ** 2 + z * z)
+    V = math.sqrt((p - e2 * r0) ** 2 + (1 - e2) * z * z)
+    z0 = b * b * z / (a * V)
+    h = U * (1 - b * b / (a * V))
+    phi = math.atan2(z + (a * a - b * b) / (b * b) * z0, p)
+    return phi * (180 / math.pi), math.atan2(y, x) * (180 / math.pi), h
+
+
+def fr(t_s, t_ns, x, y, z, geoid_m=None):
+    # the json wire writes an integral float without a fraction (6378137, 0)
+    x, y, z = (int(v) if v == int(v) else v for v in (x, y, z))
+    members = {"t_s": t_s, "t_ns": t_ns, "x": x, "y": y, "z": z}
+    if geoid_m is not None:
+        members["geoid_m"] = geoid_m
+    return j(members)
+
+
+def num(v):
+    """A float as the model states it: integral values without a fraction."""
+    return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)
+
+
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
     return json.dumps(members, separators=(",", ":"))
@@ -220,6 +272,8 @@ def j_contacts(contacts):
 P = dict(sector=19, day_s=72000, lat=35.25, lon=10.5, status="active")      # 20:00:00 UTC
 CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
+FR_XYZ = ecef_of(35.25, 10.5, 100.0)
+FR_GEO = geodetic_of(*FR_XYZ)
 VR = dict(uid="12345", lat=35.25, lon=-10.5, time_us=1614456000000000, callsign="XT19", speed_ms=12.5, lane=-3)
 AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
@@ -421,6 +475,30 @@ VECTORS = [
         input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [-10.5, 35.25]},
                  "properties": {"time_ms": 1614456000000, "callsign": "XT19", "speed_ms": 12.5}}),
         expect=v_report(**dict(VR, uid="00000", lane=0)))),
+    (FR, "01-roundtrip-derives-lat-lon-hae", dict(
+        to=FR, input=fr(1614456000, 500000000, *FR_XYZ, geoid_m=47.5),
+        expect=fr(1614456000, 500000000, *FR_XYZ, geoid_m=47.5),
+        model={"@complete": True, "time_ms": "1614456000500", "lat": num(FR_GEO[0]), "lon": num(FR_GEO[1]),
+               "hae": num(FR_GEO[2]), "xtdl.h_msl_m": num(FR_GEO[2] - 47.5)})),
+    (FR, "02-from-geojson-derives-ecef", dict(
+        # latitude 0, longitude 0, height 0: every result is exact
+        from_="geojson", to=FR,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [0, 0, 0]},
+                 "properties": {"time_ms": 1614456000500}}),
+        expect=fr(1614456000, 500000000, *ecef_of(0, 0, 0)))),
+    (FR, "03-to-xtdl-track", dict(
+        to=T, input=fr(1614456000, 500000000, *ecef_of(0, 0, 0)),
+        expect=t_track(0, 0, None, None),
+        model={"@complete": True, "lat": "0", "lon": "0", "hae": "0"})),
+    (FR, "04-time-before-1970", dict(
+        # time_ms -1: sec_of floors to -1, nsec_of gives 999000000
+        from_="geojson", to=FR,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [0, 0, 0]},
+                 "properties": {"time_ms": -1}}),
+        expect=fr(-1, 999000000, *ecef_of(0, 0, 0)))),
+    (FR, "05-nanoseconds-floor-to-milliseconds", dict(
+        to=FR, input=fr(1, 1999999, *ecef_of(0, 0, 0)), expect=fr(1, 1999999, *ecef_of(0, 0, 0)),
+        model={"@complete": True, "time_ms": "1001"})),
 ]
 
 

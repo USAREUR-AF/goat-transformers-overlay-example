@@ -3,7 +3,7 @@
 # in the overlay's formats, declared here and never in the public library.
 # It is marked `controlled` to show the mechanics; nothing in it is real.
 module        xtdl
-version       0.4.0
+version       0.5.0
 distribution  controlled
 source        "invented for this example; no external document"
 key   sector       int     -    "fictional: which of 32 sectors the reporter is in"
@@ -20,3 +20,23 @@ key   position_sent  int  -  "fictional: 1 when the report carries a position (x
 # engine-spec 0.12: `present` sets the flag to 1 whenever the entity holds a latitude.
 derive  xtdl.position_sent  present  lat
 key   lane_offset_m  int     m    "fictional: signed distance of the reporter from the middle of its lane, whole meters (xtdl-values-example)"
+# engine-spec 0.16, for xtdl-frame-example: an instant as whole seconds and
+# nanoseconds, a position in earth-centered, earth-fixed meters, and a geoid
+# separation. Each derive line fills its target only when the target is absent.
+key   t_s       int    s  "fictional: whole seconds since 1970-01-01T00:00:00Z (xtdl-frame-example)"
+key   t_ns      int    ns "fictional: nanoseconds past t_s (xtdl-frame-example)"
+key   ecef_x_m  float  m  "fictional: earth-centered, earth-fixed X, WGS 84 (xtdl-frame-example)"
+key   ecef_y_m  float  m  "fictional: earth-centered, earth-fixed Y, WGS 84 (xtdl-frame-example)"
+key   ecef_z_m  float  m  "fictional: earth-centered, earth-fixed Z, WGS 84 (xtdl-frame-example)"
+key   geoid_m   float  m  "fictional: height of the geoid above the ellipsoid at the position (xtdl-frame-example)"
+key   h_msl_m   float  m  "fictional: height above mean sea level (derived; xtdl-frame-example)"
+derive  time_ms        ms_of        xtdl.t_s xtdl.t_ns
+derive  xtdl.t_s       sec_of       time_ms
+derive  xtdl.t_ns      nsec_of      time_ms
+derive  lat            lat_of_ecef  xtdl.ecef_x_m xtdl.ecef_y_m xtdl.ecef_z_m
+derive  lon            lon_of_ecef  xtdl.ecef_x_m xtdl.ecef_y_m xtdl.ecef_z_m
+derive  hae            hae_of_ecef  xtdl.ecef_x_m xtdl.ecef_y_m xtdl.ecef_z_m
+derive  xtdl.ecef_x_m  ecef_x       lat lon hae
+derive  xtdl.ecef_y_m  ecef_y       lat lon hae
+derive  xtdl.ecef_z_m  ecef_z       lat lon hae
+derive  xtdl.h_msl_m   sub          hae xtdl.geoid_m

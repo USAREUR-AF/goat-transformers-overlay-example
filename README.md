@@ -72,7 +72,7 @@ Six invented formats and one invented model module. They are marked
 
 | File | What it is | What it shows |
 |---|---|---|
-| `model/xtdl.def` | module `xtdl`: five keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms`; a `present` derive that sets `xtdl.position_sent` (engine-spec 0.12); `xtdl.lane_offset_m` for the `smag` field of xtdl-values-example |
+| `model/xtdl.def` | module `xtdl`: twelve keys, the list `contacts` with three item keys | a `list`; a `derive` line that fills `xtdl.day_s` (time of day) from the public key `time_ms`; a `present` derive that sets `xtdl.position_sent` (engine-spec 0.12); `xtdl.lane_offset_m` for the `smag` field of xtdl-values-example; the 0.16 derive lines of xtdl-frame-example (time, ECEF, height above mean sea level) |
 | `packs/xtdl-example/` | binary, two message layouts | message kinds chosen by a number on the wire (`kind`, `when`, `requires`); a value table (`map`, `via`); a `default`; a `const`; a counted list (`group ... count`) |
 | `packs/xtdl-b-example/` | binary, other byte order, other status numbers, other time step | the same keys in a different layout; a second value table for the same key |
 | `packs/xtdl-json-example/` | JSON | the same list as a JSON array (`group`); the full time in `time_ms` |
@@ -82,6 +82,7 @@ Six invented formats and one invented model module. They are marked
 | `packs/xtdl-set-example/` | TLV | a keyed set of tag, length and value items with a nested set, residue and a 16-bit checksum item (the `tlv` wire, engine-spec 0.13) |
 | `packs/xtdl-armor-example/` | six-bit armored text | a `bits` message read and written as printable text, six bits a character (`armor sixbit`), a call sign in six-bit characters (`sixbit`), an optional last field (engine-spec 0.14) |
 | `packs/xtdl-values-example/` | binary | the value transforms (engine-spec 0.15): octal digits, sign and magnitude (with an `absent` code, and plain `smag`), an integer scale that rounds (microseconds to `time_ms`), a 6-bit character set and a scaled IEEE float; GeoJSON both ways |
+| `packs/xtdl-frame-example/` | JSON | the derive functions (engine-spec 0.16): a time as seconds and nanoseconds, a position as earth-centered, earth-fixed coordinates, and a height above mean sea level from a geoid separation, all through `derive` lines in `model/xtdl.def` |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -138,7 +139,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the nine overlay formats among them
+# the formats the engine loaded, the ten overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -174,7 +175,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the nine format names and the GeoJSON conversion
+8. In `check.sh`, replace the ten format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.

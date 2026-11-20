@@ -190,10 +190,13 @@ def fig_overlay_ring():
                 rows.append(k)
         return rows
     pub_rows, mod_rows = rows_of(public_keys()), rows_of(mod["keys"])
-    if len(pub_rows) != 2 or len(mod_rows) != 3:
+    if len(pub_rows) != 2 or not 1 <= len(mod_rows) <= 6:
         raise SystemExit("make-figures: key rows changed (%d public, %d module); re-lay the hub"
                          % (len(pub_rows), len(mod_rows)))
-    hy1 = hy0 + 200
+    # the module's key rows start at hy0 + 148, 18 apart, with 16 below the last
+    hy1 = hy0 + 148 + 18 * (len(mod_rows) - 1) + 16
+    if hy1 + 70 > iy1 - 12:
+        raise SystemExit("make-figures: the hub (%d key rows) leaves no room for the captions; re-lay the figure" % len(mod_rows))
     hx0, hx1 = cx - hw / 2, cx + hw / 2
     cy = (hy0 + hy1) / 2
 
@@ -247,9 +250,9 @@ def fig_overlay_ring():
         f.text(cx, hy0 + 148 + 18 * i, r, 13, cls="ovl", anchor="middle", mono=True)
 
     # what the picture says, in the ring and below it
-    f.text(cx, 428, "Overlay packs map a public key wherever one fits,", 14, anchor="middle")
-    f.text(cx, 448, "so they convert to and from the public formats.", 14, anchor="middle")
-    f.text(cx, 484, "The engines are not copied or changed.", 14, cls="quiet", anchor="middle")
+    f.text(cx, hy1 + 26, "Overlay packs map a public key wherever one fits,", 14, anchor="middle")
+    f.text(cx, hy1 + 46, "so they convert to and from the public formats.", 14, anchor="middle")
+    f.text(cx, hy1 + 70, "The engines are not copied or changed.", 14, cls="quiet", anchor="middle")
     f.text(W / 2, H - 40, "An engine started with --max-distribution public loads nothing from the dashed ring.",
            14, cls="ovl", anchor="middle")
     return f
