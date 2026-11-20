@@ -1,0 +1,17 @@
+{
+  "name": "04-convert-public-to-overlay",
+  "args": [
+    "convert",
+    "--from",
+    "geojson",
+    "--to",
+    "xtdl-example",
+    "--packs-only",
+    "geojson,xtdl-example",
+    "--packs",
+    "{packs}"
+  ],
+  "stdin_hex": "7b2274797065223a2246656174757265222c2267656f6d65747279223a7b2274797065223a22506f696e74222c22636f6f7264696e61746573223a5b31302e352c33352e32355d7d2c2270726f70657274696573223a7b2274696d655f6d73223a313631343435363030303030307d7d",
+  "exit": 0,
+  "stdout_text": "0140190120b90215402c420653"
+}

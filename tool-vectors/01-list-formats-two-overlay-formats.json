@@ -1,0 +1,12 @@
+{
+  "name": "01-list-formats-two-overlay-formats",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-example,xtdl-json-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 0,
+  "stdout_text": "xtdl-example\t0.3.0\tbits\nxtdl-json-example\t0.1.0\tjson\n"
+}

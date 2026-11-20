@@ -1,0 +1,14 @@
+{
+  "name": "05-public-only-engine-refuses-the-overlay",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-example",
+    "--max-distribution",
+    "public",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 1,
+  "error_kind": "distribution-refused"
+}

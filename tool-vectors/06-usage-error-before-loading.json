@@ -1,0 +1,11 @@
+{
+  "name": "06-usage-error-before-loading",
+  "args": [
+    "matrix",
+    "--packs-only",
+    "xtdl-example,",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 2
+}

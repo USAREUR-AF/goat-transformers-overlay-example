@@ -1,0 +1,12 @@
+{
+  "name": "02-matrix-two-overlay-formats",
+  "args": [
+    "matrix",
+    "--packs-only",
+    "xtdl-example,xtdl-json-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 0,
+  "stdout_text": "from\tto\tgrade\tcarried\tdropped\nxtdl-example\txtdl-example\tfull\txtdl.sector xtdl.day_s xtdl.contacts[] xtdl.contacts[].xtdl.contact_id xtdl.contacts[].xtdl.bearing_deg xtdl.contacts[].xtdl.range_m lat lon xtdl.status\t\nxtdl-example\txtdl-json-example\tpartial\txtdl.sector xtdl.contacts[] xtdl.contacts[].xtdl.contact_id xtdl.contacts[].xtdl.bearing_deg xtdl.contacts[].xtdl.range_m lat lon xtdl.status\txtdl.day_s\nxtdl-json-example\txtdl-example\tpartial\txtdl.sector xtdl.status lat lon xtdl.contacts[] xtdl.contacts[].xtdl.contact_id xtdl.contacts[].xtdl.bearing_deg xtdl.contacts[].xtdl.range_m\tuid time_ms\nxtdl-json-example\txtdl-json-example\tfull\tuid time_ms xtdl.sector xtdl.status lat lon xtdl.contacts[] xtdl.contacts[].xtdl.contact_id xtdl.contacts[].xtdl.bearing_deg xtdl.contacts[].xtdl.range_m\t\n"
+}
