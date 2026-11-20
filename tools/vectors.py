@@ -24,6 +24,7 @@ A = "xtdl-armor-example"
 V = "xtdl-values-example"
 FR = "xtdl-frame-example"
 G = "xtdl-gated-example"
+RP = "xtdl-report-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -278,6 +279,24 @@ def g_report(lat=None, lon=None, sector=None, lane=None, junk_position=False):
     bits = pos + five + mode + ("1" if valid else "0")
     assert len(bits) == 56
     return int(bits, 2).to_bytes(7, "big").hex()
+
+
+def rp(uid=None, time=None, lat=None, lon=None, cls=None, confidence=None, flags=None):
+    """xtdl-report-example as written: attributes and elements in line order,
+    the confidence only beside a class, and an empty detail element always."""
+    root = "<report"
+    if uid is not None:
+        root += ' id="%s"' % uid
+    if time is not None:
+        root += ' time="%s"' % time
+    out = root + ">"
+    if lat is not None:
+        out += '<pos lat="%s" lon="%s"/>' % (lat, lon)
+    if cls is not None:
+        out += "<class" + (' confidence="%s"' % confidence if confidence is not None else "") + ">%s</class>" % cls
+    if flags is not None:
+        out += "<flags>%s</flags>" % flags
+    return out + "<detail/></report>"
 
 
 def j(members):
@@ -539,6 +558,32 @@ VECTORS = [
         from_=T, to=G, input=t_track(None, None, 12.5, 19), expect=g_report(sector=19))),
     (G, "06-to-xtdl-track", dict(
         to=T, input=g_report(35.25, 10.5, sector=19), expect=t_track(35.25, 10.5, None, 19))),
+    (RP, "01-roundtrip", dict(
+        to=RP, input=rp("XT-19", "2021-02-27T20:00:00Z", 35.25, 10.5, "vehicle", 0.75, "positioned degraded"),
+        expect=rp("XT-19", "2021-02-27T20:00:00Z", 35.25, 10.5, "vehicle", 0.75, "positioned degraded"),
+        model={"@complete": True, "time_ms": "1614456000000", "xtdl.class": "vehicle",
+               "xtdl.confidence": "0.75", "xtdl.degraded": "1"})),
+    (RP, "02-time-with-a-fraction", dict(
+        # iso8601_short writes the milliseconds without trailing zeros: .500 is .5
+        to=RP, input=rp("XT-19", "2021-02-27T20:00:00.500Z"), expect=rp("XT-19", "2021-02-27T20:00:00.5Z"),
+        model={"time_ms": "1614456000500"})),
+    (RP, "03-confidence-without-class-is-not-written", dict(
+        # decode reads the confidence; encode writes it only with a class
+        to=RP, input='<report id="XT-19"><class confidence="0.75"/><detail/></report>',
+        expect=rp("XT-19"),
+        model={"xtdl.confidence": "0.75", "@absent": ["xtdl.class"]})),
+    (RP, "04-from-geojson-builds-the-flags", dict(
+        # a position sets xtdl.position_sent (0.12), and tokens turns it into the token positioned
+        from_="geojson", to=RP,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"time_ms": 1614456000000}, "id": "XT-19"}),
+        expect=rp("XT-19", "2021-02-27T20:00:00Z", 35.25, 10.5, flags="positioned"))),
+    (RP, "05-from-xtdl-track-sector-only", dict(
+        # no position, sector 19: the only token is sectored
+        from_=T, to=RP, input=t_track(None, None, 12.5, 19), expect=rp(flags="sectored"))),
+    (RP, "06-empty-detail-is-written", dict(
+        # sector 0 and no position: no token, so no flags element; detail is still written
+        from_=T, to=RP, input=t_track(None, None, None, 0), expect=rp())),
 ]
 
 

@@ -1,0 +1,21 @@
+# xtdl-report-example: a FICTIONAL format, invented only for this example, on the
+# `xml` wire. It shows conditional output (engine-spec 0.18): a value written
+# only beside another, flag tokens built and read by derive lines, a time
+# written without a zero fraction, and an element written even when empty.
+# Layout: pack.md.
+format        xtdl-report-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          xml
+root          report
+uses          xtdl
+
+field    uid              @id                string
+field    time_ms          @time              iso8601_short
+field    lat              pos/@lat           float
+field    lon              pos/@lon           float
+field    xtdl.class       class/#text        string
+field    xtdl.confidence  class/@confidence  float   with xtdl.class
+field    xtdl.flags       flags/#text        string
+element  detail

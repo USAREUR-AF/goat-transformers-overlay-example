@@ -160,24 +160,8 @@ def fig_overlay_ring():
         raise SystemExit("make-figures: %d packs; two columns of six is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
-    W, H = 880, 592
-    title = "%s fictional formats fill the private overlay ring" % count
-    desc = ("goat-transformers, public, at core.ref %s, holds the engines, the shared model and the public packs such as "
-            "geojson. Around it, a dashed ring is this private overlay: %s fictional formats (%s) and the model module %s, "
-            "all marked distribution %s. Every format connects to the same shared model. An engine started with "
-            "--max-distribution public loads nothing from the overlay."
-            % (ref, count.lower(), ", ".join(p["name"] for p in ps), mod["name"], mod["distribution"]))
-    f = SVG(W, H, title, desc)
-
-    # rings
-    f.rect(16, 16, W - 32, H - 32, "oring", rx=18)
-    f.text(34, 44, "This repository, the private overlay: %s fictional formats and the model module %s"
-           % (count.lower(), mod["name"]), 14, cls="ovl", bold=True)
-    ix0, ix1, iy0, iy1 = 220, 660, 72, 512
-    f.rect(ix0, iy0, ix1 - ix0, iy1 - iy0, "ring", rx=14)
-    f.text(ix0 + 18, iy0 + 28, "goat-transformers, public, at core.ref %s" % ref, 14, cls="pub", bold=True)
-
     # hub: the shared model, public keys and the overlay's module
+    ix0, ix1 = 220, 660
     cx, hy0, hw = (ix0 + ix1) / 2, 192, 284
 
     def rows_of(keys):
@@ -195,8 +179,26 @@ def fig_overlay_ring():
                          % (len(pub_rows), len(mod_rows)))
     # the module's key rows start at hy0 + 148, 18 apart, with 16 below the last
     hy1 = hy0 + 148 + 18 * (len(mod_rows) - 1) + 16
-    if hy1 + 70 > iy1 - 12:
-        raise SystemExit("make-figures: the hub (%d key rows) leaves no room for the captions; re-lay the figure" % len(mod_rows))
+    # the captions under the hub need 70 below it and 12 above the inner ring's
+    # bottom (512 on the base canvas); a taller hub makes the canvas taller
+    grow = max(0, hy1 + 70 - (512 - 12))
+    W, H = 880, 592 + grow
+    title = "%s fictional formats fill the private overlay ring" % count
+    desc = ("goat-transformers, public, at core.ref %s, holds the engines, the shared model and the public packs such as "
+            "geojson. Around it, a dashed ring is this private overlay: %s fictional formats (%s) and the model module %s, "
+            "all marked distribution %s. Every format connects to the same shared model. An engine started with "
+            "--max-distribution public loads nothing from the overlay."
+            % (ref, count.lower(), ", ".join(p["name"] for p in ps), mod["name"], mod["distribution"]))
+    f = SVG(W, H, title, desc)
+
+    # rings
+    f.rect(16, 16, W - 32, H - 32, "oring", rx=18)
+    f.text(34, 44, "This repository, the private overlay: %s fictional formats and the model module %s"
+           % (count.lower(), mod["name"]), 14, cls="ovl", bold=True)
+    iy0, iy1 = 72, 512 + grow
+    f.rect(ix0, iy0, ix1 - ix0, iy1 - iy0, "ring", rx=14)
+    f.text(ix0 + 18, iy0 + 28, "goat-transformers, public, at core.ref %s" % ref, 14, cls="pub", bold=True)
+
     hx0, hx1 = cx - hw / 2, cx + hw / 2
     cy = (hy0 + hy1) / 2
 

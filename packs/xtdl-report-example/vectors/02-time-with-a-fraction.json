@@ -1,0 +1,10 @@
+{
+  "name": "time-with-a-fraction",
+  "from": "xtdl-report-example",
+  "to": "xtdl-report-example",
+  "input": "<report id=\"XT-19\" time=\"2021-02-27T20:00:00.500Z\"><detail/></report>",
+  "expect": "<report id=\"XT-19\" time=\"2021-02-27T20:00:00.5Z\"><detail/></report>",
+  "model": {
+    "time_ms": "1614456000500"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "from-geojson-builds-the-flags",
+  "from": "geojson",
+  "to": "xtdl-report-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"time_ms\":1614456000000},\"id\":\"XT-19\"}",
+  "expect": "<report id=\"XT-19\" time=\"2021-02-27T20:00:00Z\"><pos lat=\"35.25\" lon=\"10.5\"/><flags>positioned</flags><detail/></report>"
+}

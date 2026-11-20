@@ -1,0 +1,7 @@
+{
+  "name": "empty-detail-is-written",
+  "from": "xtdl-track-example",
+  "to": "xtdl-report-example",
+  "input": "0000008000000080ffff00",
+  "expect": "<report><detail/></report>"
+}
