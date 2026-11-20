@@ -1,0 +1,10 @@
+{
+  "name": "lane-offset-type-3",
+  "from": "xtdl-switch-example",
+  "to": "xtdl-switch-example",
+  "input": "3b83",
+  "expect": "3b83",
+  "model": {
+    "xtdl.lane_offset_m": "-3"
+  }
+}

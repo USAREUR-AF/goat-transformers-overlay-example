@@ -1,0 +1,15 @@
+{
+  "name": "other-type-reads-nothing-more",
+  "from": "xtdl-switch-example",
+  "to": "xtdl-switch-example",
+  "input": "3e",
+  "expect": "3e",
+  "model": {
+    "xtdl.report_type": "6",
+    "@absent": [
+      "lat",
+      "speed_ms",
+      "xtdl.lane_offset_m"
+    ]
+  }
+}

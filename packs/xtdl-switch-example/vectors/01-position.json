@@ -1,0 +1,17 @@
+{
+  "name": "position",
+  "from": "xtdl-switch-example",
+  "to": "xtdl-switch-example",
+  "input": "991502b92006422c40",
+  "expect": "991502b92006422c40",
+  "model": {
+    "xtdl.sector": "19",
+    "xtdl.report_type": "1",
+    "lat": "35.25",
+    "lon": "10.5",
+    "@absent": [
+      "speed_ms",
+      "xtdl.lane_offset_m"
+    ]
+  }
+}
