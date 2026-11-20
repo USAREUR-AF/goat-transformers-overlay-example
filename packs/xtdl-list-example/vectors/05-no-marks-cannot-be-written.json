@@ -1,0 +1,7 @@
+{
+  "name": "no-marks-cannot-be-written",
+  "from": "xtdl-example",
+  "to": "xtdl-list-example",
+  "input": "3a100e00020c400fc8a078",
+  "expect_error": "transform-encode"
+}

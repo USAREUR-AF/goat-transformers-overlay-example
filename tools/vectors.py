@@ -27,6 +27,7 @@ G = "xtdl-gated-example"
 RP = "xtdl-report-example"
 U = "xtdl-asn1-example"
 SW = "xtdl-switch-example"
+LI = "xtdl-list-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -343,6 +344,19 @@ def sw(sector, report_type, lat=None, lon=None, speed_ms=None, lane=None):
     elif report_type in (3, 4):
         bits += smag(lane, 8)
     assert len(bits) % 8 == 0
+    return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
+
+
+def li(sector, speed_ms, contacts, marks, notes=b"", count=None):
+    """xtdl-list-example: sector, the contact count, speed, contacts, marks with a
+    last-item flag, then note bytes to the end. `count` overrides the count field."""
+    bits = ubits(sector, 5) + ubits(len(contacts) if count is None else count, 3)
+    bits += ubits(round(speed_ms * 10), 16)
+    for ident, bearing in contacts:
+        bits += ubits(ident, 8) + ubits(round(bearing * 32 / 45), 8)
+    for i, code in enumerate(marks):
+        bits += ("1" if i == len(marks) - 1 else "0") + ubits(code, 7)
+    bits += "".join(ubits(b, 8) for b in notes)
     return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
 
 
@@ -680,6 +694,26 @@ VECTORS = [
         from_=T, to=SW, input=t_track(35.25, 10.5, 12.5, 19), expect=sw(19, 0))),
     (SW, "07-to-xtdl-track", dict(
         to=T, input=sw(19, 1, lat=35.25, lon=10.5), expect=t_track(35.25, 10.5, None, 19))),
+    (LI, "01-roundtrip", dict(
+        to=LI, input=li(19, 12.5, [(12, 90), (200, 225)], [3, 9], b"AB"),
+        expect=li(19, 12.5, [(12, 90), (200, 225)], [3, 9], b"AB"),
+        model={"xtdl.contacts.#": "2", "xtdl.contacts[1].xtdl.contact_id": "200",
+               "xtdl.marks.#": "2", "xtdl.marks[1].xtdl.mark_code": "9",
+               "xtdl.notes.#": "2", "xtdl.notes[0].xtdl.note_byte": "65", "speed_ms": "12.5"})),
+    (LI, "02-no-contacts-no-note", dict(
+        # count 0, one mark (its flag 1), nothing after it: the note list is present and empty
+        to=LI, input=li(7, 0.5, [], [1]), expect=li(7, 0.5, [], [1]),
+        model={"xtdl.contacts.#": "0", "xtdl.marks.#": "1", "xtdl.notes.#": "0"})),
+    (LI, "03-count-beyond-the-message", dict(
+        # the count says 3 contacts; the message holds 2 and one mark: reading runs out
+        to=LI, input=li(19, 12.5, [(12, 90), (200, 225)], [3], count=3), expect_error="malformed-wire")),
+    (LI, "04-to-xtdl-example-contacts", dict(
+        # contacts carry over; xtdl-example's time of day and contact ranges are absent and write zero
+        to=X, input=li(19, 12.5, [(12, 90), (200, 225)], [3]),
+        expect=x_contacts(19, 0, [(12, 90, 0), (200, 225, 0)]))),
+    (LI, "05-no-marks-cannot-be-written", dict(
+        # xtdl-example's contacts report has no marks; the last-item flag needs one: transform-encode
+        from_=X, to=LI, input=x_contacts(**C), expect_error="transform-encode")),
 ]
 
 

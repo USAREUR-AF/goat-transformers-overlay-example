@@ -32,7 +32,7 @@ MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 WIRE_WORDS = {"bits": "binary", "json": "JSON", "tlv": "TLV", "text": "text line"}
 NUMBER_WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight",
                 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve",
-                13: "Thirteen", 14: "Fourteen"}
+                13: "Thirteen", 14: "Fourteen", 15: "Fifteen", 16: "Sixteen"}
 
 
 def n(v):
@@ -157,8 +157,8 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) > 14:
-        raise SystemExit("make-figures: %d packs; two columns of seven is the most the ring holds" % len(ps))
+    if len(ps) > 16:
+        raise SystemExit("make-figures: %d packs; two columns of eight is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     # hub: the shared model, public keys and the overlay's module
@@ -175,7 +175,7 @@ def fig_overlay_ring():
                 rows.append(k)
         return rows
     pub_rows, mod_rows = rows_of(public_keys()), rows_of(mod["keys"])
-    if len(pub_rows) != 2 or not 1 <= len(mod_rows) <= 6:
+    if len(pub_rows) != 2 or not 1 <= len(mod_rows) <= 8:
         raise SystemExit("make-figures: key rows changed (%d public, %d module); re-lay the hub"
                          % (len(pub_rows), len(mod_rows)))
     # the module's key rows start at hy0 + 148, 18 apart, with 16 below the last
@@ -183,6 +183,9 @@ def fig_overlay_ring():
     # the captions under the hub need 70 below it and 12 above the inner ring's
     # bottom (512 on the base canvas); a taller hub makes the canvas taller
     grow = max(0, hy1 + 70 - (512 - 12))
+    # a column of formats (52 high, 12 apart) centred on the hub must end 60 above the bottom
+    k = (len(ps) + 1) // 2
+    grow = max(grow, int((hy0 + hy1) / 2 + (k * 52 + (k - 1) * 12) / 2 + 60 - 592 + 0.999))
     W, H = 880, 592 + grow
     title = "%s fictional formats fill the private overlay ring" % count
     desc = ("goat-transformers, public, at core.ref %s, holds the engines, the shared model and the public packs such as "

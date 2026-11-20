@@ -1,0 +1,16 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-list-example",
+  "to": "xtdl-list-example",
+  "input": "9a007d0c40c8a003894142",
+  "expect": "9a007d0c40c8a003894142",
+  "model": {
+    "xtdl.contacts.#": "2",
+    "xtdl.contacts[1].xtdl.contact_id": "200",
+    "xtdl.marks.#": "2",
+    "xtdl.marks[1].xtdl.mark_code": "9",
+    "xtdl.notes.#": "2",
+    "xtdl.notes[0].xtdl.note_byte": "65",
+    "speed_ms": "12.5"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "count-beyond-the-message",
+  "from": "xtdl-list-example",
+  "to": "xtdl-list-example",
+  "input": "9b007d0c40c8a083",
+  "expect_error": "malformed-wire"
+}

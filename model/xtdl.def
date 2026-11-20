@@ -3,7 +3,7 @@
 # in the overlay's formats, declared here and never in the public library.
 # It is marked `controlled` to show the mechanics; nothing in it is real.
 module        xtdl
-version       0.7.0
+version       0.8.0
 distribution  controlled
 source        "invented for this example; no external document"
 key   sector       int     -    "fictional: which of 32 sectors the reporter is in"
@@ -50,3 +50,8 @@ derive  xtdl.flags     tokens:space:positioned,sectored  xtdl.position_sent xtdl
 derive  xtdl.degraded  has_token:space:degraded          xtdl.flags
 # engine-spec 0.20, for xtdl-switch-example: what the rest of the report holds.
 key   report_type  int  -  "fictional: 1 position, 2 speed, 3 or 4 lane offset (xtdl-switch-example)"
+# engine-spec 0.21, for xtdl-list-example: two more lists.
+list  marks                     "fictional: map marks the reporter lays (xtdl-list-example)"
+key   mark_code  int  -         "fictional: code of one mark, 0 to 127 (a key of an item of marks)"
+list  notes                     "fictional: free bytes of a note (xtdl-list-example)"
+key   note_byte  int  -         "fictional: one byte of the note (a key of an item of notes)"
