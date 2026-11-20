@@ -23,6 +23,7 @@ S = "xtdl-set-example"
 A = "xtdl-armor-example"
 V = "xtdl-values-example"
 FR = "xtdl-frame-example"
+G = "xtdl-gated-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -257,6 +258,26 @@ def fr(t_s, t_ns, x, y, z, geoid_m=None):
 def num(v):
     """A float as the model states it: integral values without a fraction."""
     return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)
+
+
+def g_report(lat=None, lon=None, sector=None, lane=None, junk_position=False):
+    """xtdl-gated-example: 56 bits, most significant first, as hex.
+
+    bit 55 is 1 when a position is sent; bit 54 is 1 when bits 49-53 hold the
+    lane offset instead of the sector. junk_position fills the position bits
+    with ones while bit 55 says they hold nothing."""
+    valid = lat is not None
+    if valid:
+        pos = ubits(round(lat * 50000), 24) + ubits(round(lon * 50000), 25)
+    else:
+        pos = "1" * 49 if junk_position else "0" * 49
+    if lane is not None:
+        mode, five = "1", smag(lane, 5)
+    else:
+        mode, five = "0", ubits(sector or 0, 5)
+    bits = pos + five + mode + ("1" if valid else "0")
+    assert len(bits) == 56
+    return int(bits, 2).to_bytes(7, "big").hex()
 
 
 def j(members):
@@ -499,6 +520,25 @@ VECTORS = [
     (FR, "05-nanoseconds-floor-to-milliseconds", dict(
         to=FR, input=fr(1, 1999999, *ecef_of(0, 0, 0)), expect=fr(1, 1999999, *ecef_of(0, 0, 0)),
         model={"@complete": True, "time_ms": "1001"})),
+    (G, "01-roundtrip-position-and-sector", dict(
+        to=G, input=g_report(35.25, 10.5, sector=19), expect=g_report(35.25, 10.5, sector=19),
+        model={"lat": "35.25", "lon": "10.5", "xtdl.sector": "19", "@absent": ["xtdl.lane_offset_m"]})),
+    (G, "02-position-not-valid-is-not-read", dict(
+        # bit 55 is 0: the position bits are not read, and encode writes them zero
+        to=G, input=g_report(sector=19, junk_position=True), expect=g_report(sector=19),
+        model={"xtdl.sector": "19", "@absent": ["lat", "lon"]})),
+    (G, "03-roundtrip-lane-offset", dict(
+        # bit 54 is 1: bits 49-53 are the lane offset, not the sector
+        to=G, input=g_report(35.25, -10.5, lane=-3), expect=g_report(35.25, -10.5, lane=-3),
+        model={"xtdl.lane_offset_m": "-3", "@absent": ["xtdl.sector"]})),
+    (G, "04-from-xtdl-values-sets-both-gates", dict(
+        # the source has a position and a lane offset: encode sets bit 55 and bit 54
+        from_=V, to=G, input=v_report(**VR), expect=g_report(35.25, -10.5, lane=-3))),
+    (G, "05-from-xtdl-track-without-position", dict(
+        # no-position codes in the source: bit 55 stays 0 and the position bits zero
+        from_=T, to=G, input=t_track(None, None, 12.5, 19), expect=g_report(sector=19))),
+    (G, "06-to-xtdl-track", dict(
+        to=T, input=g_report(35.25, 10.5, sector=19), expect=t_track(35.25, 10.5, None, 19))),
 ]
 
 

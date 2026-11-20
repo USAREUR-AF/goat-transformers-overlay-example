@@ -1,0 +1,26 @@
+# xtdl-gated-example: a FICTIONAL format, invented only for this example: a
+# 7-byte binary report whose fields exist only when other bits hold a value
+# (engine-spec 0.17 gate blocks), with the gating bits after the fields they
+# gate and one field whose meaning a bit chooses. Layout: pack.md.
+format        xtdl-gated-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+word_bytes    1
+bit_order     msb
+
+# bit 55: the position is valid
+if  0:55:1  1
+  field  lat  0:0:24   sscale:1/50000
+  field  lon  0:24:25  sscale:1/50000
+end
+
+# bit 54 chooses what bits 49-53 hold
+if  0:54:1  0
+  field  xtdl.sector          0:49:5  uint
+end
+if  0:54:1  1
+  field  xtdl.lane_offset_m   0:49:5  smag
+end

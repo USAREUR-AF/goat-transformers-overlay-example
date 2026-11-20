@@ -1,0 +1,7 @@
+{
+  "name": "from-xtdl-track-without-position",
+  "from": "xtdl-track-example",
+  "to": "xtdl-gated-example",
+  "input": "00000080000000807d0013",
+  "expect": "0000000000004c"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "roundtrip-lane-offset",
+  "from": "xtdl-gated-example",
+  "to": "xtdl-gated-example",
+  "input": "1ae4c4fbfe9c4f",
+  "expect": "1ae4c4fbfe9c4f",
+  "model": {
+    "xtdl.lane_offset_m": "-3",
+    "@absent": [
+      "xtdl.sector"
+    ]
+  }
+}

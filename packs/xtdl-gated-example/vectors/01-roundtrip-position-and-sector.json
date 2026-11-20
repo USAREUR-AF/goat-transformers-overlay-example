@@ -1,0 +1,15 @@
+{
+  "name": "roundtrip-position-and-sector",
+  "from": "xtdl-gated-example",
+  "to": "xtdl-gated-example",
+  "input": "1ae4c40401644d",
+  "expect": "1ae4c40401644d",
+  "model": {
+    "lat": "35.25",
+    "lon": "10.5",
+    "xtdl.sector": "19",
+    "@absent": [
+      "xtdl.lane_offset_m"
+    ]
+  }
+}

@@ -31,7 +31,7 @@ MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 # How a pack's `wire` (and `armor`) line is said in words.
 WIRE_WORDS = {"bits": "binary", "json": "JSON", "tlv": "TLV", "text": "text line"}
 NUMBER_WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight",
-                9: "Nine", 10: "Ten"}
+                9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve"}
 
 
 def n(v):
@@ -156,8 +156,8 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) > 10:
-        raise SystemExit("make-figures: %d packs; two columns of five is the most the ring holds" % len(ps))
+    if len(ps) > 12:
+        raise SystemExit("make-figures: %d packs; two columns of six is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     W, H = 880, 592
