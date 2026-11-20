@@ -1,0 +1,11 @@
+{
+  "name": "lane-offset-type-4-same-case",
+  "from": "xtdl-switch-example",
+  "to": "xtdl-switch-example",
+  "input": "3c05",
+  "expect": "3c05",
+  "model": {
+    "xtdl.report_type": "4",
+    "xtdl.lane_offset_m": "5"
+  }
+}

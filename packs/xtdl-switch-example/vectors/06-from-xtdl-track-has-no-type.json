@@ -1,0 +1,7 @@
+{
+  "name": "from-xtdl-track-has-no-type",
+  "from": "xtdl-track-example",
+  "to": "xtdl-switch-example",
+  "input": "20b90215402c42067d0013",
+  "expect": "98"
+}

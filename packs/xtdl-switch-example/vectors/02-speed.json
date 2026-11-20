@@ -1,0 +1,14 @@
+{
+  "name": "speed",
+  "from": "xtdl-switch-example",
+  "to": "xtdl-switch-example",
+  "input": "9a007d",
+  "expect": "9a007d",
+  "model": {
+    "speed_ms": "12.5",
+    "@absent": [
+      "lat",
+      "lon"
+    ]
+  }
+}

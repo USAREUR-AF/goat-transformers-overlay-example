@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 608" width="880" height="608" role="img" aria-labelledby="t d">
-<title id="t">Thirteen fictional formats fill the private overlay ring</title>
-<desc id="d">goat-transformers, public, at core.ref 7fb46b8, holds the engines, the shared model and the public packs such as geojson. Around it, a dashed ring is this private overlay: thirteen fictional formats (xtdl-armor-example, xtdl-asn1-example, xtdl-b-example, xtdl-example, xtdl-flag-example, xtdl-frame-example, xtdl-gated-example, xtdl-json-example, xtdl-report-example, xtdl-set-example, xtdl-text-example, xtdl-track-example, xtdl-values-example) and the model module xtdl, all marked distribution controlled. Every format connects to the same shared model. An engine started with --max-distribution public loads nothing from the overlay.</desc>
+<title id="t">Fourteen fictional formats fill the private overlay ring</title>
+<desc id="d">goat-transformers, public, at core.ref 7597d81, holds the engines, the shared model and the public packs such as geojson. Around it, a dashed ring is this private overlay: fourteen fictional formats (xtdl-armor-example, xtdl-asn1-example, xtdl-b-example, xtdl-example, xtdl-flag-example, xtdl-frame-example, xtdl-gated-example, xtdl-json-example, xtdl-report-example, xtdl-set-example, xtdl-switch-example, xtdl-text-example, xtdl-track-example, xtdl-values-example) and the model module xtdl, all marked distribution controlled. Every format connects to the same shared model. An engine started with --max-distribution public loads nothing from the overlay.</desc>
 <style>
   .ink{fill:#e6edf3} .quiet{fill:#9198a1} .pub{fill:#4493f8} .ovl{fill:#d29922}
   .t{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
@@ -14,9 +14,9 @@
   .oln{stroke:#d29922;stroke-width:1.5;fill:none;stroke-dasharray:6 4}
 </style>
 <rect x="16" y="16" width="848" height="576" rx="18" class="oring"/>
-<text x="34" y="44" class="t ovl" font-size="14" text-anchor="start" font-weight="600">This repository, the private overlay: thirteen fictional formats and the model module xtdl</text>
+<text x="34" y="44" class="t ovl" font-size="14" text-anchor="start" font-weight="600">This repository, the private overlay: fourteen fictional formats and the model module xtdl</text>
 <rect x="220" y="72" width="440" height="456" rx="14" class="ring"/>
-<text x="238" y="100" class="t pub" font-size="14" text-anchor="start" font-weight="600">goat-transformers, public, at core.ref 7fb46b8</text>
+<text x="238" y="100" class="t pub" font-size="14" text-anchor="start" font-weight="600">goat-transformers, public, at core.ref 7597d81</text>
 <path d="M350 150 L390 192" class="ln"/>
 <path d="M500 150 L490 192" class="ln"/>
 <rect x="298" y="118" width="104" height="32" rx="8" class="box"/>
@@ -30,12 +30,13 @@
 <path d="M206 383 L298 335" class="oln"/>
 <path d="M206 447 L298 351" class="oln"/>
 <path d="M206 511 L298 367" class="oln"/>
-<path d="M674 159 L582 271" class="oln"/>
-<path d="M674 223 L582 290.2" class="oln"/>
-<path d="M674 287 L582 309.4" class="oln"/>
-<path d="M674 351 L582 328.6" class="oln"/>
-<path d="M674 415 L582 347.8" class="oln"/>
-<path d="M674 479 L582 367" class="oln"/>
+<path d="M674 127 L582 271" class="oln"/>
+<path d="M674 191 L582 287" class="oln"/>
+<path d="M674 255 L582 303" class="oln"/>
+<path d="M674 319 L582 319" class="oln"/>
+<path d="M674 383 L582 335" class="oln"/>
+<path d="M674 447 L582 351" class="oln"/>
+<path d="M674 511 L582 367" class="oln"/>
 <rect x="30" y="101" width="176" height="52" rx="8" class="obox"/>
 <text x="118" y="123" class="t ink" font-size="14" text-anchor="middle">xtdl-armor-example</text>
 <text x="118" y="142" class="t quiet" font-size="13" text-anchor="middle">six-bit text · 9 vectors</text>
@@ -57,24 +58,27 @@
 <rect x="30" y="485" width="176" height="52" rx="8" class="obox"/>
 <text x="118" y="507" class="t ink" font-size="14" text-anchor="middle">xtdl-gated-example</text>
 <text x="118" y="526" class="t quiet" font-size="13" text-anchor="middle">binary · 6 vectors</text>
-<rect x="674" y="133" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="155" class="t ink" font-size="14" text-anchor="middle">xtdl-json-example</text>
-<text x="762" y="174" class="t quiet" font-size="13" text-anchor="middle">JSON · 3 vectors</text>
-<rect x="674" y="197" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="219" class="t ink" font-size="14" text-anchor="middle">xtdl-report-example</text>
-<text x="762" y="238" class="t quiet" font-size="13" text-anchor="middle">xml · 6 vectors</text>
-<rect x="674" y="261" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="283" class="t ink" font-size="14" text-anchor="middle">xtdl-set-example</text>
-<text x="762" y="302" class="t quiet" font-size="13" text-anchor="middle">TLV · 7 vectors</text>
-<rect x="674" y="325" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="347" class="t ink" font-size="14" text-anchor="middle">xtdl-text-example</text>
-<text x="762" y="366" class="t quiet" font-size="13" text-anchor="middle">text line · 5 vectors</text>
-<rect x="674" y="389" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="411" class="t ink" font-size="14" text-anchor="middle">xtdl-track-example</text>
-<text x="762" y="430" class="t quiet" font-size="13" text-anchor="middle">binary · 6 vectors</text>
-<rect x="674" y="453" width="176" height="52" rx="8" class="obox"/>
-<text x="762" y="475" class="t ink" font-size="14" text-anchor="middle">xtdl-values-example</text>
-<text x="762" y="494" class="t quiet" font-size="13" text-anchor="middle">binary · 12 vectors</text>
+<rect x="674" y="101" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="123" class="t ink" font-size="14" text-anchor="middle">xtdl-json-example</text>
+<text x="762" y="142" class="t quiet" font-size="13" text-anchor="middle">JSON · 3 vectors</text>
+<rect x="674" y="165" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="187" class="t ink" font-size="14" text-anchor="middle">xtdl-report-example</text>
+<text x="762" y="206" class="t quiet" font-size="13" text-anchor="middle">xml · 6 vectors</text>
+<rect x="674" y="229" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="251" class="t ink" font-size="14" text-anchor="middle">xtdl-set-example</text>
+<text x="762" y="270" class="t quiet" font-size="13" text-anchor="middle">TLV · 7 vectors</text>
+<rect x="674" y="293" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="315" class="t ink" font-size="14" text-anchor="middle">xtdl-switch-example</text>
+<text x="762" y="334" class="t quiet" font-size="13" text-anchor="middle">binary · 7 vectors</text>
+<rect x="674" y="357" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="379" class="t ink" font-size="14" text-anchor="middle">xtdl-text-example</text>
+<text x="762" y="398" class="t quiet" font-size="13" text-anchor="middle">text line · 5 vectors</text>
+<rect x="674" y="421" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="443" class="t ink" font-size="14" text-anchor="middle">xtdl-track-example</text>
+<text x="762" y="462" class="t quiet" font-size="13" text-anchor="middle">binary · 6 vectors</text>
+<rect x="674" y="485" width="176" height="52" rx="8" class="obox"/>
+<text x="762" y="507" class="t ink" font-size="14" text-anchor="middle">xtdl-values-example</text>
+<text x="762" y="526" class="t quiet" font-size="13" text-anchor="middle">binary · 12 vectors</text>
 <rect x="298" y="192" width="284" height="254" rx="12" class="hub"/>
 <text x="440" y="224" class="t ink" font-size="19" text-anchor="middle" font-weight="600">shared model</text>
 <text x="440" y="250" class="t quiet" font-size="13" text-anchor="middle" font-weight="600">public keys the overlay maps</text>
@@ -86,7 +90,7 @@
 <text x="440" y="376" class="m ovl" font-size="13" text-anchor="middle">position_sent lane_offset_m t_s</text>
 <text x="440" y="394" class="m ovl" font-size="13" text-anchor="middle">t_ns ecef_x_m ecef_y_m ecef_z_m</text>
 <text x="440" y="412" class="m ovl" font-size="13" text-anchor="middle">geoid_m h_msl_m class confidence</text>
-<text x="440" y="430" class="m ovl" font-size="13" text-anchor="middle">flags degraded</text>
+<text x="440" y="430" class="m ovl" font-size="13" text-anchor="middle">flags degraded report_type</text>
 <text x="440" y="472" class="t ink" font-size="14" text-anchor="middle">Overlay packs map a public key wherever one fits,</text>
 <text x="440" y="492" class="t ink" font-size="14" text-anchor="middle">so they convert to and from the public formats.</text>
 <text x="440" y="516" class="t quiet" font-size="14" text-anchor="middle">The engines are not copied or changed.</text>

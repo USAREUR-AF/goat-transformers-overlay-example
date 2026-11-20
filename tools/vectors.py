@@ -26,6 +26,7 @@ FR = "xtdl-frame-example"
 G = "xtdl-gated-example"
 RP = "xtdl-report-example"
 U = "xtdl-asn1-example"
+SW = "xtdl-switch-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -329,6 +330,19 @@ def u_track(sector, lat, lon, status, callsign=None, speed=None, lane=None, cont
         bits += "0" + ubits(len(addition), 7)                        # open type: octet count
         bits += "".join(ubits(b, 8) for b in addition)
     bits += "0" * (-len(bits) % 8)
+    return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
+
+
+def sw(sector, report_type, lat=None, lon=None, speed_ms=None, lane=None):
+    """xtdl-switch-example: 5 bits sector, 3 bits type, then the part the type selects."""
+    bits = ubits(sector, 5) + ubits(report_type, 3)
+    if report_type == 1:
+        bits += ubits(round(lat * 10_000_000), 32) + ubits(round(lon * 10_000_000), 32)
+    elif report_type == 2:
+        bits += ubits(round(speed_ms * 10), 16)
+    elif report_type in (3, 4):
+        bits += smag(lane, 8)
+    assert len(bits) % 8 == 0
     return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
 
 
@@ -644,6 +658,28 @@ VECTORS = [
         # SIZE (0..4): a fifth contact is transform-encode
         from_=X, to=U, input=x_contacts(7, 3600, [(i, 90, 1500) for i in range(5)]),
         expect_error="transform-encode")),
+    (SW, "01-position", dict(
+        to=SW, input=sw(19, 1, lat=35.25, lon=10.5), expect=sw(19, 1, lat=35.25, lon=10.5),
+        model={"xtdl.sector": "19", "xtdl.report_type": "1", "lat": "35.25", "lon": "10.5",
+               "@absent": ["speed_ms", "xtdl.lane_offset_m"]})),
+    (SW, "02-speed", dict(
+        to=SW, input=sw(19, 2, speed_ms=12.5), expect=sw(19, 2, speed_ms=12.5),
+        model={"speed_ms": "12.5", "@absent": ["lat", "lon"]})),
+    (SW, "03-lane-offset-type-3", dict(
+        to=SW, input=sw(7, 3, lane=-3), expect=sw(7, 3, lane=-3), model={"xtdl.lane_offset_m": "-3"})),
+    (SW, "04-lane-offset-type-4-same-case", dict(
+        # case 3,4: one case for two values; the type read is written back
+        to=SW, input=sw(7, 4, lane=5), expect=sw(7, 4, lane=5),
+        model={"xtdl.report_type": "4", "xtdl.lane_offset_m": "5"})),
+    (SW, "05-other-type-reads-nothing-more", dict(
+        # type 6: no case holds, else reads nothing; the report is one byte
+        to=SW, input=sw(7, 6), expect=sw(7, 6),
+        model={"xtdl.report_type": "6", "@absent": ["lat", "speed_ms", "xtdl.lane_offset_m"]})),
+    (SW, "06-from-xtdl-track-has-no-type", dict(
+        # the source has a position and a speed but no report type: type bits zero, else, one byte
+        from_=T, to=SW, input=t_track(35.25, 10.5, 12.5, 19), expect=sw(19, 0))),
+    (SW, "07-to-xtdl-track", dict(
+        to=T, input=sw(19, 1, lat=35.25, lon=10.5), expect=t_track(35.25, 10.5, None, 19))),
 ]
 
 

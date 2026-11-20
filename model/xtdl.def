@@ -3,7 +3,7 @@
 # in the overlay's formats, declared here and never in the public library.
 # It is marked `controlled` to show the mechanics; nothing in it is real.
 module        xtdl
-version       0.6.0
+version       0.7.0
 distribution  controlled
 source        "invented for this example; no external document"
 key   sector       int     -    "fictional: which of 32 sectors the reporter is in"
@@ -48,3 +48,5 @@ key   flags        string  -  "fictional: flag tokens separated by spaces: posit
 key   degraded     int     -  "fictional: 1 when the flags hold the token degraded (xtdl-report-example)"
 derive  xtdl.flags     tokens:space:positioned,sectored  xtdl.position_sent xtdl.sector
 derive  xtdl.degraded  has_token:space:degraded          xtdl.flags
+# engine-spec 0.20, for xtdl-switch-example: what the rest of the report holds.
+key   report_type  int  -  "fictional: 1 position, 2 speed, 3 or 4 lane offset (xtdl-switch-example)"
