@@ -1,0 +1,7 @@
+{
+  "name": "to-xtdl-example-contacts",
+  "from": "xtdl-list-example",
+  "to": "xtdl-example",
+  "input": "9a007d0c40c8a083",
+  "expect": "9a000000020c4000c8a000"
+}

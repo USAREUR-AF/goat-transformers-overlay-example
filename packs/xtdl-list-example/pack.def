@@ -1,0 +1,26 @@
+# xtdl-list-example: a FICTIONAL format, invented only for this example: a
+# sequential `bits` report with the three list forms of engine-spec 0.21: a
+# count read before other fields, a list closed by a last-item flag, and a list
+# that fills the rest of the message. Layout: pack.md.
+format        xtdl-list-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+layout        sequential
+bit_order     msb
+
+field  xtdl.sector  5   uint
+count  ncontacts    3
+field  speed_ms     16  uscale:1/10
+group  xtdl.contacts count @ncontacts
+  field  xtdl.contact_id   8  uint
+  field  xtdl.bearing_deg  8  uscale:45/32
+end
+group  xtdl.marks last
+  field  xtdl.mark_code  7  uint
+end
+group  xtdl.notes rest
+  field  xtdl.note_byte  8  uint
+end

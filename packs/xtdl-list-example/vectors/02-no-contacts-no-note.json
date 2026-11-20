@@ -1,0 +1,12 @@
+{
+  "name": "no-contacts-no-note",
+  "from": "xtdl-list-example",
+  "to": "xtdl-list-example",
+  "input": "38000581",
+  "expect": "38000581",
+  "model": {
+    "xtdl.contacts.#": "0",
+    "xtdl.marks.#": "1",
+    "xtdl.notes.#": "0"
+  }
+}
