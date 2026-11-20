@@ -85,6 +85,7 @@ Six invented formats and one invented model module. They are marked
 | `packs/xtdl-frame-example/` | JSON | the derive functions (engine-spec 0.16): a time as seconds and nanoseconds, a position as earth-centered, earth-fixed coordinates, and a height above mean sea level from a geoid separation, all through `derive` lines in `model/xtdl.def` |
 | `packs/xtdl-gated-example/` | binary | gate blocks on a fixed layout (engine-spec 0.17): a position that exists only when a validity bit after it is set, and bits whose meaning a mode bit chooses (a sector or a lane offset) |
 | `packs/xtdl-report-example/` | XML | conditional output (engine-spec 0.18): a confidence written only with a class (`with`), flag tokens built and read by derive lines (`tokens`, `has_token`), a time without a zero fraction (`iso8601_short`), and an element written even when empty (`element`) |
+| `packs/xtdl-asn1-example/` | ASN.1 unaligned PER | a message defined in ASN.1 (engine-spec 0.19): constrained integers, an ENUMERATED, an OPTIONAL string, a CHOICE, a SEQUENCE OF and an extension marker, each taking the fewest bits its constraint allows |
 
 Each `pack.md` states the layout, and the two binary ones work an example byte
 by byte.
@@ -141,7 +142,7 @@ cd /tmp/assembled/engines/rust
 # every vector of the library and of the overlay
 cargo test
 
-# the formats the engine loaded, the twelve overlay formats among them
+# the formats the engine loaded, the thirteen overlay formats among them
 cargo run -q -- list-formats
 
 # a contact message to JSON
@@ -177,7 +178,7 @@ library with the overlay.
    `distribution controlled`.
 7. Write vectors under `packs/<format>/vectors/`. Take the expected bytes from
    the specification or from a recorded message, never from an engine's output.
-8. In `check.sh`, replace the twelve format names and the GeoJSON conversion
+8. In `check.sh`, replace the thirteen format names and the GeoJSON conversion
    with your own formats. Run `./check.sh` until it ends with `check: ok`.
 9. Run every deployment that may hold only public formats with
    `--max-distribution public`.

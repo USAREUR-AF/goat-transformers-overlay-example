@@ -31,7 +31,8 @@ MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 # How a pack's `wire` (and `armor`) line is said in words.
 WIRE_WORDS = {"bits": "binary", "json": "JSON", "tlv": "TLV", "text": "text line"}
 NUMBER_WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight",
-                9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve"}
+                9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve",
+                13: "Thirteen", 14: "Fourteen"}
 
 
 def n(v):
@@ -156,8 +157,8 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) > 12:
-        raise SystemExit("make-figures: %d packs; two columns of six is the most the ring holds" % len(ps))
+    if len(ps) > 14:
+        raise SystemExit("make-figures: %d packs; two columns of seven is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     # hub: the shared model, public keys and the overlay's module
@@ -225,6 +226,10 @@ def fig_overlay_ring():
     def col_top(col):
         k = len(cols[col])
         return cy - (k * bh + (k - 1) * bg) / 2
+    for col in (0, 1):
+        k = len(cols[col])
+        if col_top(col) < 60 or col_top(col) + k * bh + (k - 1) * bg > H - 60:
+            raise SystemExit("make-figures: a column of %d formats meets the title or the bottom caption; re-lay the figure" % k)
     for col, xs in ((0, 30), (1, W - 30 - bw)):
         top, k = col_top(col), len(cols[col])
         for i, p in enumerate(cols[col]):

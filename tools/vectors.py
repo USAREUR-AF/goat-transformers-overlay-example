@@ -25,6 +25,7 @@ V = "xtdl-values-example"
 FR = "xtdl-frame-example"
 G = "xtdl-gated-example"
 RP = "xtdl-report-example"
+U = "xtdl-asn1-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -299,6 +300,38 @@ def rp(uid=None, time=None, lat=None, lon=None, cls=None, confidence=None, flags
     return out + "<detail/></report>"
 
 
+U_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
+
+
+def u_track(sector, lat, lon, status, callsign=None, speed=None, lane=None, contacts=(), addition=None):
+    """xtdl-asn1-example in unaligned PER (X.691), packed here bit by bit.
+
+    addition: the octets of one extension addition from a later version of
+    the module, written after the root components (and skipped on decode)."""
+    bits = "1" if addition is not None else "0"                      # extension bit
+    bits += "1" if callsign is not None else "0"                     # presence of callsign
+    bits += ubits(sector, 5)                                         # INTEGER (0..31)
+    bits += ubits(round(lat * 10_000_000) + 900_000_000, 31)         # INTEGER (-900000000..900000000)
+    bits += ubits(round(lon * 10_000_000) + 1_800_000_000, 32)       # INTEGER (-1800000000..1800000000)
+    bits += ubits(U_STATUS[status], 2)                               # ENUMERATED, 4 values
+    if callsign is not None:
+        bits += ubits(len(callsign) - 1, 3) + "".join(ubits(ord(c), 7) for c in callsign)
+    if speed is not None or lane is None:                            # CHOICE: the first alternative with content
+        bits += "0" + ubits(round((speed or 0) * 10), 10)
+    else:
+        bits += "1" + ubits(lane + 15, 5)
+    bits += ubits(len(contacts), 3)                                  # SEQUENCE (SIZE (0..4)) OF
+    for ident, range_m in contacts:
+        bits += ubits(ident, 8) + ubits(round(range_m / 100), 16)
+    if addition is not None:
+        bits += "0" + ubits(0, 6)                                    # one addition: m - 1 = 0
+        bits += "1"                                                  # its presence bit
+        bits += "0" + ubits(len(addition), 7)                        # open type: octet count
+        bits += "".join(ubits(b, 8) for b in addition)
+    bits += "0" * (-len(bits) % 8)
+    return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
+
+
 def j(members):
     """Canonical JSON text: members in the order given, no whitespace."""
     return json.dumps(members, separators=(",", ":"))
@@ -314,6 +347,8 @@ CONTACTS = [(12, 90, 1500), (200, 225, 12000)]
 C = dict(sector=7, day_s=3600, contacts=CONTACTS)                            # 01:00:00 UTC
 FR_XYZ = ecef_of(35.25, 10.5, 100.0)
 FR_GEO = geodetic_of(*FR_XYZ)
+UT = dict(sector=19, lat=35.25, lon=10.5, status="active", callsign="XT19", speed=12.5,
+          contacts=[(12, 1500), (200, 12000)])
 VR = dict(uid="12345", lat=35.25, lon=-10.5, time_us=1614456000000000, callsign="XT19", speed_ms=12.5, lane=-3)
 AR = dict(sector=19, lat=35.25, lon=10.5, callsign="XT-19", speed_ms=12.5)
 SET = dict(time_ms=1614456000000, callsign="XT-19", lat=35.25, lon=10.5, sector=19, speed_ms=12.5)  # 2021-02-27T20:00:00Z
@@ -584,6 +619,31 @@ VECTORS = [
     (RP, "06-empty-detail-is-written", dict(
         # sector 0 and no position: no token, so no flags element; detail is still written
         from_=T, to=RP, input=t_track(None, None, None, 0), expect=rp())),
+    (U, "01-roundtrip", dict(
+        to=U, input=u_track(**UT), expect=u_track(**UT),
+        model={"xtdl.sector": "19", "lat": "35.25", "lon": "10.5", "xtdl.status": "active",
+               "callsign": "XT19", "speed_ms": "12.5", "xtdl.contacts.#": "2",
+               "xtdl.contacts[1].xtdl.contact_id": "200", "xtdl.contacts[1].xtdl.range_m": "12000"})),
+    (U, "02-choice-lane-offset-no-callsign", dict(
+        to=U, input=u_track(7, -35.25, -10.5, "fault", lane=-3), expect=u_track(7, -35.25, -10.5, "fault", lane=-3),
+        model={"xtdl.lane_offset_m": "-3", "xtdl.contacts.#": "0", "@absent": ["callsign", "speed_ms"]})),
+    (U, "03-extension-addition-skipped", dict(
+        # a message from a later version of the module: the addition is read past and not written back
+        to=U, input=u_track(**UT, addition=b"\xab\xcd"), expect=u_track(**UT))),
+    (U, "04-from-xtdl-example", dict(
+        # no speed, lane offset or contacts in the source: the first alternative, speed 0, and no contacts
+        from_=X, to=U, input=x_position(**P), expect=u_track(19, 35.25, 10.5, "active"))),
+    (U, "05-from-geojson-default-status", dict(
+        from_="geojson", to=U,
+        input=j({"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.5, 35.25]},
+                 "properties": {"callsign": "XT19", "speed_ms": 12.5}}),
+        expect=u_track(0, 35.25, 10.5, "unknown", callsign="XT19", speed=12.5))),
+    (U, "06-to-xtdl-track", dict(
+        to=T, input=u_track(**UT), expect=t_track(35.25, 10.5, 12.5, 19))),
+    (U, "07-five-contacts-do-not-fit", dict(
+        # SIZE (0..4): a fifth contact is transform-encode
+        from_=X, to=U, input=x_contacts(7, 3600, [(i, 90, 1500) for i in range(5)]),
+        expect_error="transform-encode")),
 ]
 
 

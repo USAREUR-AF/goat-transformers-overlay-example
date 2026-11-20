@@ -1,0 +1,40 @@
+# xtdl-asn1-example: a FICTIONAL format, invented only for this example: a track
+# report defined in ASN.1 and sent in unaligned PER (engine-spec 0.19). The
+# ASN.1 module is in pack.md; the lines below state it in X.691 order.
+format        xtdl-asn1-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+uses          xtdl
+wire          bits
+layout        sequential
+bit_order     msb
+encoding      uper
+
+map  status  0  idle
+map  status  1  active
+map  status  2  fault
+map  status  3  unknown
+
+# XtdlTrack ::= SEQUENCE { ..., ... }: the extension marker
+ext
+  presence opt 1
+  field  xtdl.sector  int:0:31                   uint
+  field  lat          int:-900000000:900000000   sscale:1/10000000
+  field  lon          int:-1800000000:1800000000 sscale:1/10000000
+  field  xtdl.status  enum:4                     uint  via status
+  if opt.1
+    field  callsign   chars:1:8                  ascii
+  end
+  choice 2
+    alt 0
+      field  speed_ms            int:0:1023      uscale:1/10
+    alt 1
+      field  xtdl.lane_offset_m  int:-15:15      twos
+  end
+  group  xtdl.contacts size 0 4
+    field  xtdl.contact_id  int:0:255            uint
+    field  xtdl.range_m     int:0:65535          uscale:100
+  end
+end
+default  xtdl.status  unknown

@@ -1,0 +1,7 @@
+{
+  "name": "from-geojson-default-status",
+  "from": "geojson",
+  "to": "xtdl-asn1-example",
+  "input": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.5,35.25]},\"properties\":{\"callsign\":\"XT19\",\"speed_ms\":12.5}}",
+  "expect": "412a9e8881c62ff903762a31721f40"
+}
