@@ -1,0 +1,14 @@
+{
+  "name": "position-not-valid-is-not-read",
+  "from": "xtdl-gated-example",
+  "to": "xtdl-gated-example",
+  "input": "ffffffffffffcc",
+  "expect": "0000000000004c",
+  "model": {
+    "xtdl.sector": "19",
+    "@absent": [
+      "lat",
+      "lon"
+    ]
+  }
+}

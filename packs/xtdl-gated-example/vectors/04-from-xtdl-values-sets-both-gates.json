@@ -1,0 +1,7 @@
+{
+  "name": "from-xtdl-values-sets-both-gates",
+  "from": "xtdl-values-example",
+  "to": "xtdl-gated-example",
+  "input": "29ca35c988840164016f15b518ac0018531e6082082042fa000083",
+  "expect": "1ae4c4fbfe9c4f"
+}
