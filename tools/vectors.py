@@ -28,6 +28,7 @@ RP = "xtdl-report-example"
 U = "xtdl-asn1-example"
 SW = "xtdl-switch-example"
 LI = "xtdl-list-example"
+TE = "xtdl-text-ends-example"
 X_STATUS = {"idle": 0, "active": 1, "fault": 2, "unknown": 3}
 B_STATUS = {"unknown": 0, "idle": 1, "active": 2, "fault": 3}
 
@@ -357,6 +358,23 @@ def li(sector, speed_ms, contacts, marks, notes=b"", count=None):
     for i, code in enumerate(marks):
         bits += ("1" if i == len(marks) - 1 else "0") + ubits(code, 7)
     bits += "".join(ubits(b, 8) for b in notes)
+    return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
+
+
+TAG = "0123456789abcdef01234567"   # a fictional 96-bit tag
+
+
+def te(sector, tag, cls, call, terminated=True):
+    """xtdl-text-ends-example: sector, the tag as 24 hex digits, the class (8-bit
+    characters, NUL-ended unless it fills all 6 bytes), the call sign (7-bit
+    characters ended by 127), then zero bits to a whole byte."""
+    bits = ubits(sector, 8) + "".join(ubits(int(d, 16), 4) for d in tag)
+    body = "".join(ubits(ord(c), 8) for c in cls)
+    if len(cls) < 6:
+        body += ubits(0, 8)
+    bits += body + "0" * (48 - len(body))
+    bits += "".join(ubits(ord(c), 7) for c in call) + (ubits(127, 7) if terminated else "")
+    bits += "0" * (-len(bits) % 8)
     return int(bits, 2).to_bytes(len(bits) // 8, "big").hex()
 
 
@@ -714,6 +732,23 @@ VECTORS = [
     (LI, "05-no-marks-cannot-be-written", dict(
         # xtdl-example's contacts report has no marks; the last-item flag needs one: transform-encode
         from_=X, to=LI, input=x_contacts(**C), expect_error="transform-encode")),
+    (TE, "01-roundtrip", dict(
+        to=TE, input=te(19, TAG, "jeep", "XT19"), expect=te(19, TAG, "jeep", "XT19"),
+        model={"xtdl.auth_tag": TAG, "xtdl.class": "jeep", "callsign": "XT19"})),
+    (TE, "02-empty-call-sign", dict(
+        # the terminator straight away: the call sign is "", present
+        to=TE, input=te(19, TAG, "jeep", ""), expect=te(19, TAG, "jeep", ""),
+        model={"callsign": ""})),
+    (TE, "03-long-call-sign", dict(
+        # no fixed length: 20 characters, then 127
+        to=TE, input=te(7, TAG, "boat", "XT19 ALPHA BRAVO 220"), expect=te(7, TAG, "boat", "XT19 ALPHA BRAVO 220"),
+        model={"callsign": "XT19 ALPHA BRAVO 220"})),
+    (TE, "04-no-terminator", dict(
+        # the call sign runs to the end of the message without its 127
+        to=TE, input=te(19, TAG, "jeep", "XT19", terminated=False), expect_error="malformed-wire")),
+    (TE, "05-full-class-cannot-be-written", dict(
+        # 6 characters fill the class field: it reads, but there is no room for the NUL on encode
+        to=TE, input=te(19, TAG, "jeeps1", "XT19"), expect_error="transform-encode")),
 ]
 
 

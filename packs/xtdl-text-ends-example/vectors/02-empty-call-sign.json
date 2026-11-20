@@ -1,0 +1,10 @@
+{
+  "name": "empty-call-sign",
+  "from": "xtdl-text-ends-example",
+  "to": "xtdl-text-ends-example",
+  "input": "130123456789abcdef012345676a6565700000fe",
+  "expect": "130123456789abcdef012345676a6565700000fe",
+  "model": {
+    "callsign": ""
+  }
+}
