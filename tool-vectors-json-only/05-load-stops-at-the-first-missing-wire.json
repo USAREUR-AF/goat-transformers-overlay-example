@@ -1,0 +1,12 @@
+{
+  "name": "05-load-stops-at-the-first-missing-wire",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-json-example,xtdl-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 1,
+  "error_kind": "unknown-wire"
+}

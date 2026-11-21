@@ -1,0 +1,12 @@
+{
+  "name": "03-bits-format-is-unknown-wire",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 1,
+  "error_kind": "unknown-wire"
+}

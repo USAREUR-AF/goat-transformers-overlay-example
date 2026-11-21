@@ -1,0 +1,12 @@
+{
+  "name": "04-text-format-is-unknown-wire",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-text-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 1,
+  "error_kind": "unknown-wire"
+}
