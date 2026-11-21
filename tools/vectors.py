@@ -866,6 +866,24 @@ def reduced_tool_vectors():
     ]
 
 
+# The benchmark set of engine-spec 0.25 (ruling 2) for this overlay's formats:
+# the first vector with an `expect` of each pack, so it covers every wire the
+# overlay uses. check.sh runs the engine's benchmark on it; no number fails a
+# run, a vector whose output differs does.
+BENCH_ITERATIONS = 2000
+
+
+def bench_set():
+    first = {}
+    for pack, name, body in VECTORS:
+        if pack not in first and "expect" in body:
+            first[pack] = "packs/%s/vectors/%s.json" % (pack, name)
+    return {"about": "The benchmark set of engine-spec 0.25 for the overlay's fictional formats: the first "
+                     "vector with an expected output of each pack. Written by tools/vectors.py.",
+            "iterations": BENCH_ITERATIONS,
+            "vectors": [first[p] for p in sorted(first)]}
+
+
 def main():
     check = "--check" in sys.argv[1:]
     stale = 0
@@ -897,6 +915,17 @@ def main():
         else:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(text)
+    text = json.dumps(bench_set(), indent=2) + "\n"
+    path = os.path.join(ROOT, "bench", "overlay-set.json")
+    if check:
+        on_disk = open(path, encoding="utf-8").read() if os.path.exists(path) else None
+        if on_disk != text:
+            print("vectors: bench/overlay-set.json differs from tools/vectors.py")
+            stale += 1
+    else:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
     if stale:
         return 1
     print("vectors: %d and %d tool vectors %s" % (len(VECTORS), len(tools), "match tools/vectors.py" if check else "written"))

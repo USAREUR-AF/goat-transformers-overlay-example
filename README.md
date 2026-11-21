@@ -52,6 +52,7 @@ into the library.
 | `packs/<format>/vectors/` | conformance vectors: an input message and the exact expected output |
 | `tool-vectors/` | runs of the engine's command-line tool (engine-spec 0.23) on the overlay's formats: arguments, exit status and the exact output |
 | `tool-vectors-json-only/` | the same, for an engine built with only the `json` and `geojson` wires (engine-spec 0.24) |
+| `bench/overlay-set.json` | the benchmark set of engine-spec 0.25 for the overlay's formats: one vector of each pack, run by the engine's benchmark |
 | `tools/vectors.py` | computes the expected bytes of the vectors, and the expected output of the tool vectors, without an engine |
 | `assemble.sh` | builds the assembled tree; refuses to replace a library file |
 | `check.sh` | assembles, runs the Rust engine's tests and the tool vectors, and shows that a public-only engine refuses the overlay |
@@ -168,6 +169,10 @@ cargo run -q -- list-formats --max-distribution public
 # format loads, a bits one is `unknown-wire`
 cargo run -q --no-default-features --features json,geojson -- list-formats --packs-only xtdl-json-example
 cargo run -q --no-default-features --features json,geojson -- list-formats --packs-only xtdl-example
+
+# the benchmark (engine-spec 0.25) on the overlay's set, from the tree root;
+# with the path of this repository's bench/overlay-set.json
+cd /tmp/assembled && cargo run --release -q --manifest-path engines/rust/Cargo.toml --example bench -- /path/to/overlay/bench/overlay-set.json
 ```
 
 The assembled tree holds a file `.goat-transformers-assembled` with the library

@@ -1,0 +1,22 @@
+{
+  "about": "The benchmark set of engine-spec 0.25 for the overlay's fictional formats: the first vector with an expected output of each pack. Written by tools/vectors.py.",
+  "iterations": 2000,
+  "vectors": [
+    "packs/xtdl-armor-example/vectors/01-roundtrip.json",
+    "packs/xtdl-asn1-example/vectors/01-roundtrip.json",
+    "packs/xtdl-b-example/vectors/01-roundtrip.json",
+    "packs/xtdl-example/vectors/01-position-roundtrip.json",
+    "packs/xtdl-flag-example/vectors/01-position-sets-the-flag.json",
+    "packs/xtdl-frame-example/vectors/01-roundtrip-derives-lat-lon-hae.json",
+    "packs/xtdl-gated-example/vectors/01-roundtrip-position-and-sector.json",
+    "packs/xtdl-json-example/vectors/01-roundtrip.json",
+    "packs/xtdl-list-example/vectors/01-roundtrip.json",
+    "packs/xtdl-report-example/vectors/01-roundtrip.json",
+    "packs/xtdl-set-example/vectors/01-roundtrip.json",
+    "packs/xtdl-switch-example/vectors/01-position.json",
+    "packs/xtdl-text-ends-example/vectors/01-roundtrip.json",
+    "packs/xtdl-text-example/vectors/01-roundtrip.json",
+    "packs/xtdl-track-example/vectors/01-roundtrip.json",
+    "packs/xtdl-values-example/vectors/01-roundtrip.json"
+  ]
+}

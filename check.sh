@@ -17,6 +17,9 @@
 #   8. an engine built with only the json and geojson wires (engine-spec 0.24)
 #      loads the json overlay format and refuses the others with unknown-wire
 #      (tool-vectors-json-only/)
+#   9. the engine's benchmark (engine-spec 0.25) runs the overlay's set
+#      (bench/overlay-set.json): every output matches its vector; the timings
+#      are printed and never fail the run
 set -euo pipefail
 OVERLAY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 usage() { echo "usage: check.sh [--core-dir DIR]" >&2; exit 2; }
@@ -104,4 +107,14 @@ grep -q 'unknown-wire' <<<"$missing" && grep -q 'bits' <<<"$missing" \
   || fail "a bits pack on the json-only build should be unknown-wire naming bits, got: $missing"
 echo "check: the json-only build refuses xtdl-example:"
 echo "  $(head -n 1 <<<"$missing")"
+
+# The benchmark of engine-spec 0.25 on the overlay's own set, from the tree root.
+cd "$tree"
+bench="$(cargo run --release -q --manifest-path engines/rust/Cargo.toml --example bench -- "$OVERLAY/bench/overlay-set.json")" \
+  || fail "the benchmark found an output that differs from its vector"
+want=$(( $(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["vectors"]))' "$OVERLAY/bench/overlay-set.json") + 1 ))
+got="$(grep -c '^{' <<<"$bench")"
+[ "$got" -eq "$want" ] || fail "the benchmark printed $got lines, expected $want (one per vector, one for the load)"
+echo "check: benchmark of the overlay set ($((want - 1)) vectors, every output as expected):"
+tail -n 1 <<<"$bench" | sed 's/^/  /'
 echo "check: ok"
