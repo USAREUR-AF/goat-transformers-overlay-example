@@ -1,0 +1,12 @@
+{
+  "name": "01-json-format-loads",
+  "args": [
+    "list-formats",
+    "--packs-only",
+    "xtdl-json-example",
+    "--packs",
+    "{packs}"
+  ],
+  "exit": 0,
+  "stdout_text": "xtdl-json-example\t0.1.0\tjson\n"
+}

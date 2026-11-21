@@ -14,6 +14,9 @@
 #   7. the library's tool vectors (the command-line contract, engine-spec 0.23)
 #      pass on the assembled tree, but for the one that a controlled module
 #      must fail, and the overlay's own tool vectors (tool-vectors/) pass
+#   8. an engine built with only the json and geojson wires (engine-spec 0.24)
+#      loads the json overlay format and refuses the others with unknown-wire
+#      (tool-vectors-json-only/)
 set -euo pipefail
 OVERLAY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 usage() { echo "usage: check.sh [--core-dir DIR]" >&2; exit 2; }
@@ -85,4 +88,20 @@ unexpected="$(grep '^FAIL ' <<<"$library_tools" | grep -v '^FAIL 010-max-distrib
 echo "check: library $(tail -n 1 <<<"$library_tools") (010 is refused: the overlay's module is controlled)"
 python3 -I tools/tool-vectors.py --vectors "$OVERLAY/tool-vectors" -- "$tool" \
   || fail "the overlay's tool vectors failed"
+
+# A build with fewer wires (engine-spec 0.24): only json and geojson.
+echo "check: building the engine with only the json and geojson wires"
+(cd "$tree/engines/rust" && CARGO_TARGET_DIR="$work/target-json" \
+  cargo build --release -q --no-default-features --features json,geojson) \
+  || fail "the build with only json and geojson failed"
+json_tool="$work/target-json/release/goat-xf"
+python3 -I tools/tool-vectors.py --vectors "$OVERLAY/tool-vectors-json-only" -- "$json_tool" \
+  || fail "the overlay's json-only tool vectors failed"
+set +e
+missing="$("$json_tool" list-formats --packs "$tree/packs" --packs-only xtdl-example 2>&1)"
+set -e
+grep -q 'unknown-wire' <<<"$missing" && grep -q 'bits' <<<"$missing" \
+  || fail "a bits pack on the json-only build should be unknown-wire naming bits, got: $missing"
+echo "check: the json-only build refuses xtdl-example:"
+echo "  $(head -n 1 <<<"$missing")"
 echo "check: ok"

@@ -836,13 +836,44 @@ def tool_vectors():
     ]
 
 
+# Tool vectors for a build with only the `json` and `geojson` wires (engine-spec
+# 0.24): the json format loads as in a full build (ruling 1b), and a pack on a
+# wire the build lacks is `unknown-wire` (ruling 1c). check.sh builds the engine
+# with `--no-default-features --features json,geojson` to run them.
+REDUCED_WIRES = ("json", "geojson")
+
+
+def reduced_tool_vectors():
+    T = "xtdl-text-example"
+    assert pack_header(J)["wire"] in REDUCED_WIRES
+    assert pack_header(X)["wire"] not in REDUCED_WIRES and pack_header(T)["wire"] not in REDUCED_WIRES
+    h = pack_header(J)
+    packs = ["--packs", "{packs}"]
+    return [
+        ("01-json-format-loads", dict(
+            args=["list-formats", "--packs-only", J] + packs, exit=0,
+            stdout_text="%s\t%s\t%s\n" % (h["format"], h["version"], h["wire"]))),
+        ("02-json-format-capability-unchanged", dict(
+            args=["matrix", "--packs-only", J] + packs, exit=0,
+            stdout_text="from\tto\tgrade\tcarried\tdropped\n" + capability_line(J, J))),
+        ("03-bits-format-is-unknown-wire", dict(
+            args=["list-formats", "--packs-only", X] + packs, exit=1, error_kind="unknown-wire")),
+        ("04-text-format-is-unknown-wire", dict(
+            args=["list-formats", "--packs-only", T] + packs, exit=1, error_kind="unknown-wire")),
+        ("05-load-stops-at-the-first-missing-wire", dict(
+            # packs load in the order given: the json pack loads, the bits pack fails
+            args=["list-formats", "--packs-only", "%s,%s" % (J, X)] + packs, exit=1, error_kind="unknown-wire")),
+    ]
+
+
 def main():
     check = "--check" in sys.argv[1:]
     stale = 0
-    tools = tool_vectors()
-    for name, body in tools:
+    tools = [("tool-vectors", n, b) for n, b in tool_vectors()] + \
+            [("tool-vectors-json-only", n, b) for n, b in reduced_tool_vectors()]
+    for folder, name, body in tools:
         text = json.dumps(dict(name=name, **body), indent=2) + "\n"
-        path = os.path.join(ROOT, "tool-vectors", name + ".json")
+        path = os.path.join(ROOT, folder, name + ".json")
         if check:
             on_disk = open(path, encoding="utf-8").read() if os.path.exists(path) else None
             if on_disk != text:
