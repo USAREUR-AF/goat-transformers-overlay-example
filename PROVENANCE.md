@@ -18,6 +18,6 @@ source material. Name the controlling office.]
 
 ## This example
 
-Everything here is fictional. The module `model/xtdl.def` and the sixteen formats
+Everything here is fictional. The module `model/xtdl.def` and the seventeen formats
 under `packs/` were invented for this example, and so were the tool vectors
 under `tool-vectors/` and `tool-vectors-json-only/` that run them; their layouts encode nothing real. They exist to show the overlay shape.

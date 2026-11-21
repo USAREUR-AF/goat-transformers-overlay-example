@@ -1,0 +1,10 @@
+{
+  "name": "fraction-read-then-dropped",
+  "from": "xtdl-seconds-example",
+  "to": "xtdl-seconds-example",
+  "input": "{\"time\":\"2021-02-27T20:00:00.789Z\"}",
+  "expect": "{\"time\":\"2021-02-27T20:00:00Z\"}",
+  "model": {
+    "time_ms": "1614456000789"
+  }
+}

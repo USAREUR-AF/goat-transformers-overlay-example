@@ -32,7 +32,9 @@ MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 WIRE_WORDS = {"bits": "binary", "json": "JSON", "tlv": "TLV", "text": "text line"}
 NUMBER_WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight",
                 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve",
-                13: "Thirteen", 14: "Fourteen", 15: "Fifteen", 16: "Sixteen"}
+                13: "Thirteen", 14: "Fourteen", 15: "Fifteen", 16: "Sixteen", 17: "Seventeen",
+                18: "Eighteen", 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two",
+                23: "Twenty-three", 24: "Twenty-four"}
 
 
 def n(v):
@@ -157,8 +159,10 @@ class SVG:
 
 def fig_overlay_ring():
     ps, ms, ref = packs(), modules(), core_ref()
-    if len(ps) > 16:
-        raise SystemExit("make-figures: %d packs; two columns of eight is the most the ring holds" % len(ps))
+    # the canvas grows with the longer column (below); past two columns of twelve the
+    # figure would be taller than it is wide, so re-lay it then
+    if len(ps) > 24:
+        raise SystemExit("make-figures: %d packs; two columns of twelve is the most the ring holds" % len(ps))
     mod = ms[0]
     count = NUMBER_WORDS.get(len(ps), str(len(ps)))
     # hub: the shared model, public keys and the overlay's module
@@ -184,8 +188,12 @@ def fig_overlay_ring():
     # bottom (512 on the base canvas); a taller hub makes the canvas taller
     grow = max(0, hy1 + 70 - (512 - 12))
     # a column of formats (52 high, 12 apart) centred on the hub must end 60 above the bottom
+    # the columns centre on the hub unless the longer one would then reach above
+    # y 60 (the title); then they centre lower, and the canvas grows to hold them
     k = (len(ps) + 1) // 2
-    grow = max(grow, int((hy0 + hy1) / 2 + (k * 52 + (k - 1) * 12) / 2 + 60 - 592 + 0.999))
+    colh = k * 52 + (k - 1) * 12
+    col_cy = max((hy0 + hy1) / 2, 60 + colh / 2)
+    grow = max(grow, int(col_cy + colh / 2 + 60 - 592 + 0.999))
     W, H = 880, 592 + grow
     title = "%s fictional formats fill the private overlay ring" % count
     desc = ("goat-transformers, public, at core.ref %s, holds the engines, the shared model and the public packs such as "
@@ -228,7 +236,7 @@ def fig_overlay_ring():
 
     def col_top(col):
         k = len(cols[col])
-        return cy - (k * bh + (k - 1) * bg) / 2
+        return col_cy - (k * bh + (k - 1) * bg) / 2
     for col in (0, 1):
         k = len(cols[col])
         if col_top(col) < 60 or col_top(col) + k * bh + (k - 1) * bg > H - 60:

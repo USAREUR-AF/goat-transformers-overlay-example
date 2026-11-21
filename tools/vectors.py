@@ -18,6 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 X, B, J = "xtdl-example", "xtdl-b-example", "xtdl-json-example"
 T, TX = "xtdl-track-example", "xtdl-text-example"
+SEC = "xtdl-seconds-example"
 F = "xtdl-flag-example"
 S = "xtdl-set-example"
 A = "xtdl-armor-example"
@@ -449,6 +450,33 @@ VECTORS = [
         input=j({"time": "2021-02-27T20:00:00.000Z", "sector": 19,
                  "position": {"lat": 35.25, "lon": 10.5}}),
         expect=x_position(**dict(P, status="unknown")))),
+    # xtdl-seconds-example (engine-spec 0.26, iso8601_s): whole seconds only.
+    # 2021-02-27T20:00:00Z is 1614456000000 ms; the times below differ from it
+    # only in their milliseconds, which iso8601_s reads and never writes.
+    (SEC, "01-roundtrip", dict(
+        to=SEC,
+        input=j({"id": "XT-19", "time": "2021-02-27T20:00:00Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}),
+        expect=j({"id": "XT-19", "time": "2021-02-27T20:00:00Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}),
+        model={"time_ms": "1614456000000", "xtdl.sector": "19"})),
+    (SEC, "02-fraction-read-then-dropped", dict(
+        to=SEC,
+        input=j({"time": "2021-02-27T20:00:00.789Z"}),
+        expect=j({"time": "2021-02-27T20:00:00Z"}),
+        model={"time_ms": "1614456000789"})),
+    (SEC, "03-from-json-ms-drops-the-milliseconds", dict(
+        from_=J, to=SEC,
+        input=j({"id": "XT-19", "time": "2021-02-27T20:00:00.250Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}),
+        expect=j({"id": "XT-19", "time": "2021-02-27T20:00:00Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}))),
+    (SEC, "04-to-json-ms-writes-000", dict(
+        to=J,
+        input=j({"id": "XT-19", "time": "2021-02-27T20:00:00Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}),
+        expect=j({"id": "XT-19", "time": "2021-02-27T20:00:00.000Z", "sector": 19, "position": {"lat": 35.25, "lon": 10.5}}))),
+    (SEC, "05-just-before-the-epoch", dict(
+        # -1 ms is in the second 1969-12-31T23:59:59 (0.26 ruling 3)
+        from_=J, to=SEC,
+        input=j({"time": "1969-12-31T23:59:59.999Z"}),
+        expect=j({"time": "1969-12-31T23:59:59Z"}),
+        model={"time_ms": "-1"})),
     (T, "01-roundtrip", dict(
         to=T, input=t_track(35.25, 10.5, 12.5, 19), expect=t_track(35.25, 10.5, 12.5, 19),
         model={"lat": "35.25", "lon": "10.5", "speed_ms": "12.5", "xtdl.sector": "19"})),

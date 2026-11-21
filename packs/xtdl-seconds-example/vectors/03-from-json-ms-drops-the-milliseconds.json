@@ -1,0 +1,7 @@
+{
+  "name": "from-json-ms-drops-the-milliseconds",
+  "from": "xtdl-json-example",
+  "to": "xtdl-seconds-example",
+  "input": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00.250Z\",\"sector\":19,\"position\":{\"lat\":35.25,\"lon\":10.5}}",
+  "expect": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00Z\",\"sector\":19,\"position\":{\"lat\":35.25,\"lon\":10.5}}"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "just-before-the-epoch",
+  "from": "xtdl-json-example",
+  "to": "xtdl-seconds-example",
+  "input": "{\"time\":\"1969-12-31T23:59:59.999Z\"}",
+  "expect": "{\"time\":\"1969-12-31T23:59:59Z\"}",
+  "model": {
+    "time_ms": "-1"
+  }
+}
