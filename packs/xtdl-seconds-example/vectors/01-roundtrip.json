@@ -1,0 +1,11 @@
+{
+  "name": "roundtrip",
+  "from": "xtdl-seconds-example",
+  "to": "xtdl-seconds-example",
+  "input": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00Z\",\"sector\":19,\"position\":{\"lat\":35.25,\"lon\":10.5}}",
+  "expect": "{\"id\":\"XT-19\",\"time\":\"2021-02-27T20:00:00Z\",\"sector\":19,\"position\":{\"lat\":35.25,\"lon\":10.5}}",
+  "model": {
+    "time_ms": "1614456000000",
+    "xtdl.sector": "19"
+  }
+}

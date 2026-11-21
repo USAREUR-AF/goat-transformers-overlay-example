@@ -12,6 +12,7 @@
     "packs/xtdl-json-example/vectors/01-roundtrip.json",
     "packs/xtdl-list-example/vectors/01-roundtrip.json",
     "packs/xtdl-report-example/vectors/01-roundtrip.json",
+    "packs/xtdl-seconds-example/vectors/01-roundtrip.json",
     "packs/xtdl-set-example/vectors/01-roundtrip.json",
     "packs/xtdl-switch-example/vectors/01-position.json",
     "packs/xtdl-text-ends-example/vectors/01-roundtrip.json",

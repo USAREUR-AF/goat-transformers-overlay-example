@@ -1,0 +1,17 @@
+# xtdl-seconds-example: a FICTIONAL JSON format, invented only for this example,
+# whose schema allows a time to the whole second and nothing finer
+# (engine-spec 0.26, `iso8601_s`). It holds the report time in the public key
+# `time_ms`, so a time from xtdl-json-example (milliseconds) converts to it with
+# the milliseconds dropped, and back with `.000`.
+format        xtdl-seconds-example
+version       0.1.0
+distribution  controlled
+source        "invented for this example; no external document"
+wire          json
+uses          xtdl
+
+field  uid          id            string
+field  time_ms      time          iso8601_s
+field  xtdl.sector  sector        int
+field  lat          position.lat  float
+field  lon          position.lon  float
