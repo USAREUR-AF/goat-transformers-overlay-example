@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 684" width="880" height="684" role="img" aria-labelledby="t d">
 <title id="t">Seventeen fictional formats fill the private overlay ring</title>
-<desc id="d">goat-transformers, public, at core.ref 654b0ee, holds the engines, the shared model and the public packs such as geojson. Around it, a dashed ring is this private overlay: seventeen fictional formats (xtdl-armor-example, xtdl-asn1-example, xtdl-b-example, xtdl-example, xtdl-flag-example, xtdl-frame-example, xtdl-gated-example, xtdl-json-example, xtdl-list-example, xtdl-report-example, xtdl-seconds-example, xtdl-set-example, xtdl-switch-example, xtdl-text-ends-example, xtdl-text-example, xtdl-track-example, xtdl-values-example) and the model module xtdl, all marked distribution controlled. Every format connects to the same shared model. An engine started with --max-distribution public loads nothing from the overlay.</desc>
+<desc id="d">goat-transformers, public, at core.ref 589dc2d, holds the engines, the shared model and the public packs such as geojson. Around it, a dashed ring is this private overlay: seventeen fictional formats (xtdl-armor-example, xtdl-asn1-example, xtdl-b-example, xtdl-example, xtdl-flag-example, xtdl-frame-example, xtdl-gated-example, xtdl-json-example, xtdl-list-example, xtdl-report-example, xtdl-seconds-example, xtdl-set-example, xtdl-switch-example, xtdl-text-ends-example, xtdl-text-example, xtdl-track-example, xtdl-values-example) and the model module xtdl, all marked distribution controlled. Every format connects to the same shared model. An engine started with --max-distribution public loads nothing from the overlay.</desc>
 <style>
   .ink{fill:#1f2328} .quiet{fill:#59636e} .pub{fill:#0969da} .ovl{fill:#9a6700}
   .t{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
@@ -16,7 +16,7 @@
 <rect x="16" y="16" width="848" height="652" rx="18" class="oring"/>
 <text x="34" y="44" class="t ovl" font-size="14" text-anchor="start" font-weight="600">This repository, the private overlay: seventeen fictional formats and the model module xtdl</text>
 <rect x="220" y="72" width="440" height="532" rx="14" class="ring"/>
-<text x="238" y="100" class="t pub" font-size="14" text-anchor="start" font-weight="600">goat-transformers, public, at core.ref 654b0ee</text>
+<text x="238" y="100" class="t pub" font-size="14" text-anchor="start" font-weight="600">goat-transformers, public, at core.ref 589dc2d</text>
 <path d="M350 150 L390 192" class="ln"/>
 <path d="M500 150 L490 192" class="ln"/>
 <rect x="298" y="118" width="104" height="32" rx="8" class="box"/>
